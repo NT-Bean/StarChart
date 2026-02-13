@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="StarChart.vcxproj" />
+  <Project Path="StarChart.vcxproj" Id="3e334435-84c0-4e65-9048-467d7c57213e" />
 </Solution>
