@@ -13,22 +13,21 @@
 #include "shaderClass.h"
 #include "Camera.h"
 
-int width = 900;
+int width = 1600;
 int height = 900;
 
 std::vector<Vertex> vertices =
 {
-    Vertex( glm::vec3( 0.0f,  0.0f,  0.0f)), // origin
-    Vertex( glm::vec3( 0.5f,  0.0f,  0.0f)), // forward i think
-    Vertex( glm::vec3( 0.0f,  0.5f,  0.0f)), // up
-    Vertex( glm::vec3( 0.0f,  0.0f,  0.5f))  // right i think
+    Vertex( glm::vec3( 1.0f,  0.0f,  1.0f)), // origin
+    Vertex( glm::vec3( 1.0f,  0.0f,  0.0f)), // forward i think
+    Vertex( glm::vec3( 0.0f,  0.0f,  1.0f)), // up
+    Vertex( glm::vec3( 0.0f,  0.0f,  0.0f))  // right i think
 };
 
 std::vector<GLuint> indices =
 {
     0, 1, 2,
-    0, 3, 2,
-    0, 3, 1
+    1, 2, 3,
 };
 
 
@@ -50,7 +49,7 @@ int main()
 
 
     gladLoadGL();
-    glViewport(0, 0, width, height);
+
 
 
     Shader shaderProgram("default.vert", "default.frag");
@@ -72,7 +71,7 @@ int main()
     EBO1.Unbind();
 
 
-    Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+    Camera camera(width, height, glm::vec3(0.0f, 0.5f, 2.0f));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -84,12 +83,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderProgram.Activate();
 
-        glfwGetFramebufferSize(window, &width, &height);
-        glViewport(0, 0, width, height);
-
         camera.Inputs(window);
         // Updates and exports the camera matrix to the Vertex Shader
         camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+        glViewport(0, 0, width, height);
 
         VAO1.Bind();
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
