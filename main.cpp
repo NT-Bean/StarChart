@@ -17,19 +17,18 @@ int width = 900;
 int height = 900;
 
 std::vector<Vertex> vertices =
-
-// 3D is working but it should be a rectangle instead of a triangle and i dont know what up
 {
-    Vertex( glm::vec3(-0.5f, -0.5f, 0.0f)),
-    Vertex( glm::vec3(-0.5f,  0.5f, 0.0f)),
-    Vertex( glm::vec3( 0.5f,  0.5f, 0.0f)),
-    Vertex( glm::vec3( 0.5f, -0.5f, 0.0f))
+    Vertex( glm::vec3( 0.0f,  0.0f,  0.0f)), // origin
+    Vertex( glm::vec3( 0.5f,  0.0f,  0.0f)), // forward i think
+    Vertex( glm::vec3( 0.0f,  0.5f,  0.0f)), // up
+    Vertex( glm::vec3( 0.0f,  0.0f,  0.5f))  // right i think
 };
 
 std::vector<GLuint> indices =
 {
-    0, 2, 1,
-    0, 3, 2
+    0, 1, 2,
+    0, 3, 2,
+    0, 3, 1
 };
 
 
@@ -66,7 +65,7 @@ int main()
     EBO EBO1(indices);
 
     // Links VBO attributes such as coordinates and colors to VAO
-    VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 3 * sizeof(Vertex), 0);
+    VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
     // Unbind all to prevent accidentally modifying them
     VAO1.Unbind();
     VBO1.Unbind();
