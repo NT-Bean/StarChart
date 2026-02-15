@@ -1,4 +1,4 @@
-// failed build count: 4
+// failed build count: 7
 
 #include <iostream>
 #include <vector>
@@ -20,20 +20,23 @@ int height = 900;
 // consts
 float pi = glm::pi<float>();
 
+std::vector<Vertex> defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions);
+std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions);
 
-std::vector<Vertex> vertices =
-{
-    Vertex( glm::vec3( 1.0f,  0.0f,  1.0f), glm::vec3( 1.0f, 0.0f, 1.0f) ),
-    Vertex( glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3( 1.0f, 0.0f, 0.0f) ), 
-    Vertex( glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3( 0.0f, 0.0f, 1.0f) ), 
-    Vertex( glm::vec3( 0.0f,  0.0f,  0.0f), glm::vec3( 0.0f, 1.0f, 0.0f) )  
-};
 
-std::vector<GLuint> indices =
-{
-    0, 1, 2,
-    1, 2, 3,
-};
+//std::vector<Vertex> vertices =
+//{
+//    Vertex( glm::vec3( 1.0f,  0.0f,  1.0f), glm::vec3( 1.0f, 0.0f, 1.0f) ),
+//    Vertex( glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3( 1.0f, 0.0f, 0.0f) ), 
+//    Vertex( glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3( 0.0f, 0.0f, 1.0f) ), 
+//    Vertex( glm::vec3( 0.0f,  0.0f,  0.0f), glm::vec3( 0.0f, 1.0f, 0.0f) )  
+//};
+//
+//std::vector<GLuint> indices =
+//{
+//    0, 1, 2,
+//    1, 2, 3,
+//};
 
 
 struct Star
@@ -48,6 +51,12 @@ struct Star
 
     Star(std::string name, float radius, glm::vec3 color, glm::vec3 position, int subdivisions)
     {
+        if (subdivisions % 4 != 0)
+        {
+            subdivisions = 16;
+        }
+        subdivisions = glm::max<int>(subdivisions, 12);
+
         this->name = name;
         this->radius = radius;
         this->color = color;
@@ -55,44 +64,13 @@ struct Star
 
         std::cout << "New star generated named " << name << std::endl;
         std::cout << "Radius (km) is: " << radius << std::endl;
-        definePoints(position, subdivisions);
+        vertices = defineSphereVertices(radius, color, position, subdivisions);
+        std::cout << "Sphere vertices defined. The length of `vertices` of star " << name << " is " << vertices.size() << std::endl;
+
+        indices = defineSphereIndices(vertices, subdivisions);
+        std::cout << "Sphere indices defined. The length of `indices` of star " << name << " is " << indices.size() << std::endl;
     }
 
-    void definePoints(glm::vec3 position, int subdivisions)
-    {
-        double radiusLy = radius * 1.0570008340247E-7; // converts km to 1/1,000,000 of a light year. sure, arbitrary, i know. i dont care
-        std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
-        std::cout << "The number of requested subdivisions is " << subdivisions << std::endl;
-        subdivisions = subdivisions + (4 - subdivisions % 4);
-        for (int i = 1; i <= subdivisions; i++)
-        {
-            // special case where j = 0: all points below meet at a vertex
-            vertices.push_back(Vertex(glm::vec3(position.x, radiusLy + position.y, position.z), color));
-
-            for (int j = 1; j < subdivisions; j++)
-            {
-                float heading = ((float)i * 2.0f * pi) / (float)subdivisions;
-                float azimuth = ((float)j * 2.0f * pi) / (float)subdivisions + (pi / 2);
-                Vertex currentVertex =
-                    Vertex(glm::vec3(
-                        radiusLy * glm::cos(heading) * glm::cos(azimuth) + position.x,
-                        radiusLy * glm::sin(heading) * glm::cos(azimuth) + position.y,
-                        radiusLy * glm::sin(azimuth) + position.z
-                    ), color);
-                vertices.push_back(currentVertex);
-
-                // debug vertices
-                std::cout << "\\left(" << currentVertex.position.x << "," << currentVertex.position.y - 10<< "," << currentVertex.position.z + 3<< "\\right)" << std::endl;
-            }
-
-            // special case where j = subdivisions: all points above meet at a vertex
-
-            vertices.push_back(Vertex(glm::vec3(position.x, -radiusLy + position.y, position.z), color));
-        }
-
-            // just write your own index algorithm brochacho
-        }
-    }
 };
 
 
@@ -171,4 +149,103 @@ int main()
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
+}
+
+std::vector<Vertex> defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions)
+{
+    std::vector<Vertex> vertices = {};
+    double radiusLy = radius * 1.0570008340247E-7; // converts km to 1/1,000,000 of a light year. sure, arbitrary, i know. i dont care
+    std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
+    std::cout << "The number of requested subdivisions is " << subdivisions << std::endl;
+    for (int i = 0; i < subdivisions; i++) // [0...15]
+    {
+        float heading = ((float)i * 2.0f * pi) / (float)subdivisions;
+        std::cout << "heading: " << heading << std::endl;
+        for (int j = 0; j <= subdivisions / 2; j++) // [0...d/2]
+        {
+            float azimuth = ((float)j * 2.0f * pi) / (float)subdivisions + (pi / 2);
+            Vertex currentVertex =
+                Vertex(glm::vec3(
+                    radiusLy * glm::cos(heading) * glm::cos(azimuth) + position.x,
+                    radiusLy * glm::sin(azimuth) + position.y,
+                    radiusLy * glm::sin(heading) * glm::cos(azimuth) + position.z
+                    
+                ), color);
+            vertices.push_back(currentVertex);
+
+            std::cout << "azimuth: " << azimuth << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    return vertices;
+}
+
+std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions)
+{
+    std::vector<GLuint> indices = {};
+    int layerCount = subdivisions / 2 + 1;
+    for (int i = 1; i <= subdivisions - ((subdivisions - 1) % 2); i += 2) // horizontal
+    {
+        for (int j = 1; j <= layerCount - 2; j += 2) // vertical
+        {
+            int index = (j + layerCount * i);
+            int overflowCheckedIndex = (index + layerCount > subdivisions * layerCount) ? (index + layerCount - subdivisions * layerCount) : (index + layerCount);
+            int underflowCheckedIndex = (index - layerCount < 1) ? (index - layerCount + subdivisions * layerCount) : (index - layerCount);
+
+            // top right
+            indices.push_back(index);
+            indices.push_back(index - 1);
+            indices.push_back(overflowCheckedIndex);
+
+            // bottom left
+            indices.push_back(index);
+            indices.push_back(index + 1);
+            indices.push_back(underflowCheckedIndex);
+
+            // top left
+            indices.push_back(index);
+            indices.push_back(index - 1);
+            indices.push_back(underflowCheckedIndex);
+
+            // bottom right
+            indices.push_back(index);
+            indices.push_back(index + 1);
+            indices.push_back(overflowCheckedIndex);
+        }
+    }
+
+    for (int i = 0; i <= (subdivisions - 2) - (subdivisions - 4) % 2; i += 2) // horizontal
+    {
+        for (int j = 2; j <= layerCount - 3; j += 2) // vertical
+        {
+            int index = (j + layerCount * i);
+            int overflowCheckedIndex = (index + layerCount > subdivisions * layerCount) ? (index + layerCount - subdivisions * layerCount) : (index + layerCount);
+            int underflowCheckedIndex = (index - layerCount < 1) ? (index - layerCount + subdivisions * layerCount) : (index - layerCount);
+
+            // top right
+            indices.push_back(index);
+            indices.push_back(index - 1);
+            indices.push_back(overflowCheckedIndex);
+
+            // bottom left
+            indices.push_back(index);
+            indices.push_back(index + 1);
+            indices.push_back(underflowCheckedIndex);
+
+            // top left
+            indices.push_back(index);
+            indices.push_back(index - 1);
+            indices.push_back(underflowCheckedIndex);
+
+            // bottom right
+            indices.push_back(index);
+            indices.push_back(index + 1);
+            indices.push_back(overflowCheckedIndex);
+
+            // std::cout << index << std::endl;
+        }
+    }
+
+    return indices;
 }
