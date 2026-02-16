@@ -53,13 +53,15 @@ void Camera::Inputs(GLFWwindow* window)
 	{
 		Position += speed * -Up;
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
 	{
-		speed = 0.1f;
+		speed += 0.1f;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
 	{
-		speed = 0.05f;
+		speed -= 0.2f;
+        if (speed < 0.1f)
+            speed = 0.1f;
 	}
 
 
