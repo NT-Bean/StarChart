@@ -9,7 +9,7 @@ Camera::Camera(int width, int height, glm::vec3 position)
 	Position = position;
 }
 
-void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform)
+void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
 {
 	// Initializes matrices since otherwise they will be the null matrix
 	glm::mat4 view = glm::mat4(1.0f);
@@ -21,7 +21,10 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shade
 	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
 	// Exports the camera matrix to the Vertex Shader
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
+    for (int i = 0; i < std::size(shaders); i++)
+    {
+        glUniformMatrix4fv(glGetUniformLocation(shaders[i].ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
+    }
 }
 
 
@@ -66,7 +69,7 @@ void Camera::Inputs(GLFWwindow* window)
 
 
 	// Handles mouse inputs
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
 		// Hides mouse cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -104,7 +107,7 @@ void Camera::Inputs(GLFWwindow* window)
 		// Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
 		glfwSetCursorPos(window, (width / 2), (height / 2));
 	}
-	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 	{
 		// Unhides cursor since camera is not looking around anymore
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);

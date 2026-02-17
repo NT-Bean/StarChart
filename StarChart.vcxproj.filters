@@ -55,10 +55,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag">
+    <None Include="star.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="default.vert">
+    <None Include="star.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="flare.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="flare.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
