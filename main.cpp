@@ -1,4 +1,4 @@
-// failed build count: 16
+// failed build count: 20
 
 #include <iostream>
 #include <vector>
@@ -7,12 +7,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include<stb/stb_image.h>
 
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
 #include "shaderClass.h"
 #include "camera.h"
+#include "texture.h"
 
 int width = 1280;
 int height = 720;
@@ -20,6 +22,8 @@ int height = 720;
 // consts
 float pi = glm::pi<float>();
 float L0 = 78.7248f; // zero-point luminosity; defined such that the Sun's M_bol = 4.74
+float scale = 1e4f; // 1 over whatever
+float c = 299792458.0f; // speed of light in m/s
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -32,17 +36,14 @@ struct Star
     std::string name = "unknown star";
     float radius = 1.0f; // in solar radii
     glm::vec4 color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f); // unit is whatever unit i end up using
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f); // unit is lightyears right up until you render it
 
     std::vector<Vertex> vertices = {};
     std::vector<GLuint> indices = {};
     VAO starVAO;
 
-    float luminosity;
-    // float absoluteMagnitude;
-
-    // std::vector<Vertex> sunflareVertices = {};
-    // std::vector<GLuint> sunflareIndices = {};
+    float luminosity = 1.0f;
+    
     VAO flareVAO;
 
     Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 position, int subdivisions)
@@ -58,7 +59,7 @@ struct Star
         this->luminosity = luminosity;
         this->position = position;
 
-        // absoluteMagnitude = -2.5 * glm::log(luminosity / L0);
+        std::cout << "the luminosity of " << name << " is " << luminosity << std::endl;
 
 
         std::cout << "New star generated named " << name << std::endl;
@@ -74,41 +75,54 @@ struct Star
         EBO starEBO(indices);
 
         starVAO.LinkAttribute(starVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-        starVAO.LinkAttribute(starVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
-
-        
+        starVAO.LinkAttribute(starVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
         starVAO.Unbind();
         starVBO.Unbind();
         starEBO.Unbind();
 
+
         flareVAO.Bind();
 
-        std::vector<Vertex> point = { Vertex(position * 1e7f, glm::vec4(1.0f, 0.0f, 1.0f, 0.5f))};
+        std::vector<Vertex> point = { Vertex(position * scale, glm::vec4(color, 1.0f))};
         VBO flareVBO(point);
 
         flareVAO.LinkAttribute(flareVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-        flareVAO.LinkAttribute(flareVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+        flareVAO.LinkAttribute(flareVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
         flareVAO.Unbind();
         flareVBO.Unbind();
         std::cout << "flare defined at (" << point[0].position.x << ", " << point[0].position.y << ", " << point[0].position.z << ")" << std::endl << std::endl;
     }
 
-    void Draw(Shader& shader, Shader& flareShader, Camera& camera)
+    void Draw(Shader& shader, Shader& flareShader, Camera& camera, Texture flareTex)
     {
         glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
         std::vector<Shader> shaders = { flareShader, shader };
-        camera.Matrix(60.0f, 0.1f, 1e9f, shaders, "camMatrix");
-
+        camera.Matrix(60.0f, 1e-2 / scale, 1e6f * scale, shaders, "camMatrix");
 
         shader.Activate();
         starVAO.Bind();
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         starVAO.Unbind();
         
+
+        float distance = glm::distance(position, camera.Position) / scale * c * 86400 * 365; // converting scaled distance to meters
+        float irradiance = (luminosity * 3.827e26f) / (4 * pi * distance * distance); // converts luminosity to watts inside equation
+
         flareShader.Activate();
+        glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
+        glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
+        std::cout << name << " evirradiance " << irradiance + 10 << " watts" << std::endl;
+        // std::cout << name << " distance is " << distance << " meters" << std::endl;
+        // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl;
+
         flareVAO.Bind();
+        
+        glActiveTexture(GL_TEXTURE0);
+        flareTex.Bind();
+        flareTex.texUnit(flareShader, "tex0", 0);
+
         glDrawArrays(GL_POINTS, 0, 1);
         flareVAO.Unbind();
     }
@@ -134,46 +148,47 @@ int main()
 
     gladLoadGL();
 
+    Shader shaderProgram("resources/star.vert", "resources/star.frag");
+    Shader flareShaderProgram("resources/flare.vert", "resources/flare.frag");
 
-
-    Shader shaderProgram("star.vert", "star.frag");
-    Shader flareShaderProgram("flare.vert", "flare.frag");
+    Texture flareTex("resources/flare.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 
     std::vector<Star> stars =
     {
-         Star("sol",       1.0f,   glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,   glm::vec3(0.0f, 0.0f, 0.0f),  80),
-         Star("procyon a", 2.043f, glm::vec3(0.9f, 0.9f, 1.0f), 7.049f, glm::vec3(0.00001146f, 0.0f, 0.0f), 80),
-         Star("evil sol",  1.0f,   glm::vec3(1.0f, 0.0f, 0.0f), 1.0f,   glm::vec3(-0.00001146f, 0.0f, 0.0f),  80)
-
-         
+         Star("sol",       1.0f,   glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,   glm::vec3(0.0f, 0.0f, 0.0f),  128),
+         Star("procyon a", 2.043f, glm::vec3(0.9f, 0.9f, 1.0f), 7.049f, glm::vec3(1.0f, 0.0f, 0.0f), 128),
+         Star("evil sol",  1.0f,   glm::vec3(1.0f, 0.0f, 0.0f), 1.0f,   glm::vec3(-1.0f, 0.0f, 0.0f),  128)
     };
 
 
-    Camera camera(width, height, glm::vec3(0.0f, 0.0f, 158.550f));
+    Camera camera(width, height, glm::vec3(1.0f, 0.0f, 1.58125e-5), scale);
+
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     glfwSwapInterval(1); // turn on vsync (limit framrate)
 
-
     double prevTime = glfwGetTime();
-    std::cout << "FPS: ";
+    // std::cout << "FPS: ";
+
 
     while(!glfwWindowShouldClose(window))
     {
         double currentTime = glfwGetTime();
         int FPS = 1 / (currentTime - prevTime);
         prevTime = currentTime;
-        std::cout << "\x1b[2K\rFPS: " << FPS;
+        // std::cout << "\x1b[2K\rFPS: " << FPS;
 
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderProgram.Activate();
 
-        camera.Inputs(window);
-        // Updates and exports the camera matrix to the Vertex Shader
+        camera.Inputs(window, scale);
+
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwGetFramebufferSize(window, &width, &height);
         glfwGetFramebufferSize(window, &camera.width, &camera.height);
@@ -181,7 +196,7 @@ int main()
 
         for (int i = 0; i < std::size(stars); i++)
         {
-            stars[i].Draw(shaderProgram, flareShaderProgram, camera);
+            stars[i].Draw(shaderProgram, flareShaderProgram, camera, flareTex);
         }
 
         glfwSwapBuffers(window);
@@ -213,7 +228,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 std::vector<Vertex> defineSphereVertices(float radius, glm::vec4 color, glm::vec3 position, int subdivisions)
 {
     std::vector<Vertex> vertices = {};
-    double radiusLy = radius * 0.735355f; // converts solar radius to 1/10,000,000 of a light year. sure, arbitrary, i know. i dont care
+    double radiusLy = radius * 7.35355e-8 * scale; // converts solar radius to whatever the scale is
     std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
     for (int i = 0; i < subdivisions; i++) // [0...15]
     {
@@ -223,9 +238,9 @@ std::vector<Vertex> defineSphereVertices(float radius, glm::vec4 color, glm::vec
             float azimuth = ((float)j * 2.0f * pi) / (float)subdivisions + (pi / 2);
             Vertex currentVertex =
                 Vertex(glm::vec3(
-                    radiusLy * glm::cos(heading) * glm::cos(azimuth) + position.x * 1e7f,
-                    radiusLy * glm::sin(azimuth) + position.y * 1e7f,
-                    radiusLy * glm::sin(heading) * glm::cos(azimuth) + position.z * 1e7f
+                    radiusLy * glm::cos(heading) * glm::cos(azimuth) + position.x * scale,
+                    radiusLy * glm::sin(azimuth) + position.y * scale,
+                    radiusLy * glm::sin(heading) * glm::cos(azimuth) + position.z * scale
                     
                 ), color);
             vertices.push_back(currentVertex);
@@ -297,8 +312,6 @@ std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdiv
             indices.push_back(index);
             indices.push_back(index + 1);
             indices.push_back(overflowCheckedIndex);
-
-            // std::cout << index << std::endl;
         }
     }
 

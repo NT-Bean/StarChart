@@ -2,11 +2,12 @@
 
 
 
-Camera::Camera(int width, int height, glm::vec3 position)
+Camera::Camera(int width, int height, glm::vec3 position, float scale)
 {
 	Camera::width = width;
 	Camera::height = height;
 	Position = position;
+    Camera::speed = 1e-8 * scale;
 }
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
@@ -29,7 +30,7 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<S
 
 
 
-void Camera::Inputs(GLFWwindow* window)
+void Camera::Inputs(GLFWwindow* window, float scale)
 {
 	// Handles key inputs
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -58,13 +59,13 @@ void Camera::Inputs(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS)
 	{
-		speed += 0.1f;
+		speed += 1e-9f * scale;
 	}
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
 	{
-		speed -= 0.2f;
-        if (speed < 0.1f)
-            speed = 0.1f;
+		speed -= 2e-9f / scale;
+        if (speed < 1e-11f * scale)
+            speed = 1e-11f * scale;
 	}
 
 

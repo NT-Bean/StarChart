@@ -36,6 +36,12 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VBO.h">
@@ -53,19 +59,14 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="star.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="star.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="flare.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="flare.vert">
-      <Filter>Resource Files</Filter>
-    </None>
+    <None Include="resources\flare.frag" />
+    <None Include="resources\flare.vert" />
+    <None Include="resources\star.frag" />
+    <None Include="resources\star.vert" />
   </ItemGroup>
 </Project>
