@@ -7,6 +7,7 @@ Camera::Camera(int width, int height, glm::vec3 position, float scale)
 	Camera::width = width;
 	Camera::height = height;
 	Position = position;
+    Camera::scale = scale;
     Camera::speed = 1e-8 * scale;
 }
 
