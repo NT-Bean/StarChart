@@ -9,6 +9,7 @@ Camera::Camera(int width, int height, glm::vec3 position, float scale)
 	Position = position;
     Camera::scale = scale;
     Camera::speed = 1e-8 * scale;
+    Camera::acceleration = speed / 1e10;
 }
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
@@ -23,7 +24,7 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<S
 	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
 	// Exports the camera matrix to the Vertex Shader
-    for (int i = 0; i < std::size(shaders); i++)
+    for (int i = 0; i < shaders.size(); i++)
     {
         glUniformMatrix4fv(glGetUniformLocation(shaders[i].ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
     }
@@ -60,13 +61,20 @@ void Camera::Inputs(GLFWwindow* window, float scale)
 	}
 	if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS)
 	{
-		speed += 1e-9f * scale;
+		speed += acceleration * scale;
+        acceleration = speed / 1e10;
+        std::cout << "speed: " << speed << std::endl;
+        std::cout << "acceleration: " << acceleration << std::endl;
 	}
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
 	{
-		speed -= 2e-9f / scale;
-        if (speed < 1e-11f * scale)
-            speed = 1e-11f * scale;
+		speed -= 3 * acceleration * scale;
+        acceleration = speed / 1e10;
+        std::cout << "speed: " << speed << std::endl;
+        std::cout << "acceleration: " << acceleration << std::endl;
+
+        if (speed < 1e-9f * scale)
+            speed = 1e-9f * scale;
 	}
 
 

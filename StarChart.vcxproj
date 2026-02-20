@@ -140,6 +140,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="stars.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="stars.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
@@ -160,6 +162,9 @@
     <None Include="resources\flare.vert" />
     <None Include="resources\star.frag" />
     <None Include="resources\star.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\flare.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

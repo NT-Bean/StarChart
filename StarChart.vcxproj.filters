@@ -42,6 +42,9 @@
     <ClCompile Include="texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VBO.h">
@@ -62,11 +65,27 @@
     <ClInclude Include="texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\flare.frag" />
-    <None Include="resources\flare.vert" />
-    <None Include="resources\star.frag" />
-    <None Include="resources\star.vert" />
+    <None Include="resources\flare.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\flare.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\star.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\star.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\flare.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
