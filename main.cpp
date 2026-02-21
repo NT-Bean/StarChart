@@ -52,10 +52,10 @@ int main()
 
     Stars stars = Stars(
         std::vector<Stars::Star> {
-            Stars::Star("sol",          1.0f,   glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,      glm::vec3(0.0, 0.0, 0.0),   128),
-            Stars::Star("procyon a",    2.043f, glm::vec3(0.9f, 0.9f, 1.0f), 7.049f,    glm::vec3(1.0, 0.0, 0.0),   128),
+            Stars::Star("sol",          1.0f,   glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,      glm::vec3( 0.0, 0.0, 0.0),  128),
+            Stars::Star("procyon a",    2.043f, glm::vec3(0.9f, 0.9f, 1.0f), 7.049f,    glm::vec3( 1.0, 0.0, 0.0),  128),
             Stars::Star("evil sol",     1.0f,   glm::vec3(1.0f, 0.0f, 0.0f), 1.0f,      glm::vec3(-1.0, 0.0, 0.0),  128)
-    }, flareTex, shaderProgram, flareShaderProgram);
+    }, flareTex, shaderProgram, flareShaderProgram, 0.1f);
 
 
     Camera camera(width, height, glm::vec3(0.0, 0.0, 1.58125e-5) * Stars::scale, Stars::scale);
@@ -90,6 +90,7 @@ int main()
         glfwGetFramebufferSize(window, &width, &height);
         glfwGetFramebufferSize(window, &camera.width, &camera.height);
 
+        stars.checkInfluence(camera);
 
         stars.drawAll(shaderProgram, flareShaderProgram, camera);
 

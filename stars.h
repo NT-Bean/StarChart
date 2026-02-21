@@ -19,6 +19,9 @@ public:
     const float pi = glm::pi<float>();
     static float scale;
 
+    int boundStar = -1;
+    static float influenceRadius;
+
     Texture flareTex = Texture("resources/Untitled.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
     Shader starShader = Shader("resources/star.vert", "resources/star.frag");
     Shader flareShader = Shader("resources/flare.vert", "resources/flare.frag");
@@ -40,16 +43,19 @@ public:
 
         Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 position, int subdivisions);
 
+        void define(int subdivisions);
         void draw(Shader& shader, Shader& flareShader, Camera& camera, Texture flareTex);
     };
 
-    std::vector<Star> bodies = {};
 
-    Stars(std::vector<Star> stars, Texture flareTex, Shader starShader, Shader flareShader);
+    std::vector<Star> stars = {};
+
+    Stars(std::vector<Star> stars, Texture flareTex, Shader starShader, Shader flareShader, float bindingRadius);
+
+    void checkInfluence(Camera& camera);
 
     void drawAll(Shader& starShader, Shader& flareShader, Camera& camera);
     void deleteAll();
-
 
     static std::vector<Vertex> defineSphereVertices(float radius, glm::vec4 color, glm::vec3 position, int subdivisions);
     static std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions);

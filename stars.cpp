@@ -1,13 +1,10 @@
 #include "stars.h"
 
 float Stars::scale = 1e4f;
+float Stars::influenceRadius = 0.1f;
 
 Stars::Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 position, int subdivisions)
 {
-    if (subdivisions % 4 != 0 || subdivisions < 12)
-    {
-        subdivisions = 16;
-    }
 
     this->name = name;
     this->radius = radius;
@@ -23,10 +20,18 @@ Stars::Star::Star(std::string name, float radius, glm::vec3 color, float luminos
 
     std::cout << "the luminosity of " << name << " is " << luminosity << std::endl;
 
-    vertices = defineSphereVertices(radius, this->color, position, subdivisions);
-    // std::cout << name << "'s vertices defined. length of vertices is " << vertices.size() << std::endl;
+    define(subdivisions);
+}
+
+void Stars::Star::define(int subdivisions)
+{
+    if (subdivisions % 4 != 0 || subdivisions < 12)
+    {
+        subdivisions = 16;
+    }
+
+    vertices = defineSphereVertices(radius, color, position, subdivisions);
     indices = defineSphereIndices(vertices, subdivisions);
-    // std::cout << name << "'s indices defined. length of indices is " << indices.size() << std::endl;
 
     starVAO.Bind();
     VBO starVBO(vertices);
@@ -39,10 +44,9 @@ Stars::Star::Star(std::string name, float radius, glm::vec3 color, float luminos
     starVBO.Unbind();
     starEBO.Unbind();
 
-
     flareVAO.Bind();
 
-    std::vector<Vertex> point = { Vertex(position * scale, glm::vec4(color, 1.0f)) };
+    std::vector<Vertex> point = { Vertex(position * scale, color) };
     VBO flareVBO(point);
 
     flareVAO.LinkAttribute(flareVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
@@ -50,7 +54,6 @@ Stars::Star::Star(std::string name, float radius, glm::vec3 color, float luminos
 
     flareVAO.Unbind();
     flareVBO.Unbind();
-    std::cout << "flare defined at (" << point[0].position.x << ", " << point[0].position.y << ", " << point[0].position.z << ")" << std::endl << std::endl;
 }
 
 void Stars::Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Texture flareTex)
@@ -86,28 +89,74 @@ void Stars::Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Text
     flareVAO.Unbind();
 }
 
-Stars::Stars(std::vector<Star> bodies, Texture flareTex, Shader starShader, Shader flareShader)
+
+
+Stars::Stars(std::vector<Star> bodies, Texture flareTex, Shader starShader, Shader flareShader, float influenceRadius)
 {
-    this->bodies = bodies;
+    this->stars = bodies;
     this->flareTex = flareTex;
     this->starShader = starShader;
     this->flareShader = flareShader;
+    this->influenceRadius = influenceRadius;
+}
+
+void Stars::checkInfluence(Camera& camera)
+{
+    if (boundStar == -1)
+    {
+        for (int i = 0; i < stars.size(); i++)
+        {
+            if (glm::distance(camera.Position / scale, stars[i].position) < influenceRadius)
+            {
+                boundStar = i;
+                std::cout << "just bound to " << stars[boundStar].name << " (" << boundStar << ") buddeh" << std::endl;
+
+                camera.Position -= stars[boundStar].position * scale;
+                glm::vec3 oldPos = stars[boundStar].position;
+                for (int j = 0; j < stars.size(); j++)
+                {
+                    stars[j].position -= oldPos;
+                    stars[j].define(128);
+                }
+                return;
+            }
+        }
+    }
+    else if (boundStar == 0 && glm::distance(camera.Position / scale, stars[0].position) > influenceRadius)
+    {
+        std::cout << "star 0 was unbound from. ...wait, what was the point of that again?" << std::endl;
+        boundStar = -1;
+    }
+    else if (glm::distance(camera.Position / scale, stars[boundStar].position) > influenceRadius)
+    {
+        std::cout << stars[boundStar].name << " (" << boundStar << ") was unbound from" << std::endl;
+        boundStar = -1;
+        camera.Position -= stars[0].position * scale;
+        for (int i = 1; i < stars.size(); i++)
+        {
+            stars[i].position -= stars[0].position;
+            stars[i].define(128);
+        }
+        stars[0].position = glm::vec3(0.0f, 0.0f, 0.0f);
+        stars[0].define(128);
+        return;
+    }
 }
 
 void Stars::drawAll(Shader& starShader, Shader& flareShader, Camera& camera)
 {
-    for (int i = 0; i < bodies.size(); i++)
+    for (int i = 0; i < stars.size(); i++)
     {
-        bodies[i].draw(starShader, flareShader, camera, flareTex);
+        stars[i].draw(starShader, flareShader, camera, flareTex);
     }
 }
 
 void Stars::deleteAll()
 {
-    for (int i = 0; i < bodies.size(); i++)
+    for (int i = 0; i < stars.size(); i++)
     {
-        bodies[i].starVAO.Delete();
-        bodies[i].flareVAO.Delete();
+        stars[i].starVAO.Delete();
+        stars[i].flareVAO.Delete();
     }
 }
 
@@ -117,7 +166,7 @@ std::vector<Vertex> Stars::defineSphereVertices(float radius, glm::vec4 color, g
     std::vector<Vertex> vertices = {};
     constexpr float pi = glm::pi<float>();
 
-    double radiusLy = radius * 7.35355e-8 * scale; // converts solar radius to whatever the scale is
+    double radiusLy = radius * 7.35355e-8 * scale; // converts solar radius to whatever the scale is in lightyears
     std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
 
     for (int i = 0; i < subdivisions; i++) // [0...15]

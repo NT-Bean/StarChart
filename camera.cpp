@@ -1,6 +1,7 @@
 #include"Camera.h"
 
 
+float accConstant = 1e5;
 
 Camera::Camera(int width, int height, glm::vec3 position, float scale)
 {
@@ -9,7 +10,7 @@ Camera::Camera(int width, int height, glm::vec3 position, float scale)
 	Position = position;
     Camera::scale = scale;
     Camera::speed = 1e-8 * scale;
-    Camera::acceleration = speed / 1e10;
+    Camera::acceleration = speed / accConstant;
 }
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
@@ -62,14 +63,14 @@ void Camera::Inputs(GLFWwindow* window, float scale)
 	if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS)
 	{
 		speed += acceleration * scale;
-        acceleration = speed / 1e10;
+        acceleration = speed / accConstant;
         std::cout << "speed: " << speed << std::endl;
         std::cout << "acceleration: " << acceleration << std::endl;
 	}
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
 	{
 		speed -= 3 * acceleration * scale;
-        acceleration = speed / 1e10;
+        acceleration = speed / accConstant;
         std::cout << "speed: " << speed << std::endl;
         std::cout << "acceleration: " << acceleration << std::endl;
 
