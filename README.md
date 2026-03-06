@@ -4,7 +4,7 @@
 *Coded with OpenGL and tears.*
 
 Current features include:
-- 2 inaccurately positioned stars.
-- A fake star.
-- No planets.
-- Non-functional star flares.
+- Star positions from astronomical coordinates
+- Sun-flares
+- Accurate (enough) colors
+- almost star systems
