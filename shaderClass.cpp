@@ -44,6 +44,10 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
+Shader::Shader(int probablyNULL)
+{
+    ID = probablyNULL;
+}
 
 void Shader::Activate()
 {

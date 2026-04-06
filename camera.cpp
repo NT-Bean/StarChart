@@ -9,8 +9,8 @@ Camera::Camera(int width, int height, glm::vec3 position, float scale)
 	Camera::height = height;
 	Position = position;
     Camera::scale = scale;
-    Camera::speed = 1e-8 * scale;
-    Camera::acceleration = speed / accConstant;
+    Camera::speed = 1e-6f;
+    // Camera::acceleration = speed / accConstant;
 }
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
@@ -60,6 +60,7 @@ void Camera::Inputs(GLFWwindow* window, float scale)
 	{
 		Position += speed * -Up;
 	}
+    /*
 	if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS)
 	{
 		speed += acceleration * scale;
@@ -77,7 +78,7 @@ void Camera::Inputs(GLFWwindow* window, float scale)
         if (speed < 1e-9f * scale)
             speed = 1e-9f * scale;
 	}
-
+    */
 
 	// Handles mouse inputs
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)

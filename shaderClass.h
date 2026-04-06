@@ -15,6 +15,7 @@ class Shader
 public:
 	GLuint ID;
 	Shader(const char* vertexFile, const char* fragmentFile);
+    Shader(int probablyNULL);
 
 	void Activate();
 	void Delete();

@@ -13,5 +13,5 @@ void main()
 {
 	gl_Position = camMatrix * vec4(flarePos, 1.0f);
 	vertexColor = color;
-	gl_PointSize = irradiance + max(7.0f * pow(luminosity, 1.0f / 3.0f), 5.0f); // * sqrt(luminosity);
+	gl_PointSize = irradiance + max(7.5f * pow((log2(luminosity) / log2(10)), 1.0f / 3.0f), 10.0f); // * sqrt(luminosity);
 }

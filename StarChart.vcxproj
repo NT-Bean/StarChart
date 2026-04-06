@@ -140,7 +140,8 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="shaderClass.cpp" />
-    <ClCompile Include="stars.cpp" />
+    <ClCompile Include="systems.cpp" />
+    <ClCompile Include="starsystem.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
@@ -152,7 +153,9 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="shaderClass.h" />
-    <ClInclude Include="stars.h" />
+    <ClInclude Include="systems.h" />
+    <ClInclude Include="starsystem.h" />
+    <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
