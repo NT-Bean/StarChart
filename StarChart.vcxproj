@@ -155,7 +155,6 @@
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="systems.h" />
     <ClInclude Include="starsystem.h" />
-    <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />

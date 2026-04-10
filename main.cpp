@@ -43,8 +43,24 @@ std::vector<Vertex> eclipticPlane =
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-int main()
+int main(int argc, char **argv)
 {
+    for (int i = 0; i < argc; ++i)
+    {
+        if (strcmp(argv[i], "-h") == 0)
+        {
+            std::cout << "i need help too man, the spheres aren't rendering" << std::endl << std::endl;
+            std::cout << "'-f': prevents flares from rendering" << std::endl;
+            std::cout << "'-h': take a wild guess" << std::endl << std::endl;
+            return 0;
+        }
+        if (strcmp(argv[i], "-f") == 0)
+        {
+            StarSystem::renderFlares = false;
+            std::cout << "flares disabled" << std::endl;
+        }
+    }
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -153,6 +169,7 @@ int main()
         */
 
         Systems::drawAll(camera);
+        Systems::systems[0].bodies[0].draw(Systems::systems[0].starShader, Systems::systems[0].flareShader, camera, Systems::systems[0].flareTex);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

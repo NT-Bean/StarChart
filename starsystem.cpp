@@ -8,8 +8,9 @@ Shader StarSystem::defaultStarShader = Shader(NULL);
 Shader StarSystem::defaultFlareShader = Shader(NULL);
 Texture StarSystem::defaultFlareTex = Texture(NULL);
 
-float StarSystem::influenceRadius = 0.1f;
+bool StarSystem::renderFlares = true;
 
+float StarSystem::influenceRadius = 0.1f;
 
 
 AstroCoords::AstroCoords(int raHours, int raMinutes, double raSeconds, int decDegrees, int decArcminutes, double decArcseconds, float distance)
@@ -34,7 +35,7 @@ glm::vec3 AstroCoords::ToPosition()
     return glm::vec3(x, y, z);
 }
 
-Star::Star(std::string name, float radius, float temperature, float luminosity, /*AstroCoords astroCoords*/ glm::vec3 pos, int subdivisions)
+Star::Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions)
 {
 
     this->name = name;
@@ -74,7 +75,7 @@ Star::Star(std::string name, float radius, float temperature, float luminosity, 
         blue = temperature - 10.0f;
         blue = 138.51773f * glm::log(blue) - 305.0448f;
     }
-    this->color = glm::vec4(red / 255.0f, green / 255.0f, blue / 255.0f, 1.0f);
+    this->color = glm::vec3(red / 255.0f, green / 255.0f, blue / 255.0f);
 
 
     std::cout << "New star generated named " << name << std::endl;
@@ -90,7 +91,7 @@ Star::Star(std::string name, float radius, float temperature, float luminosity, 
 
     std::cout << std::endl;
 }
-Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, /*AstroCoords astroCoords*/ glm::vec3 pos, int subdivisions)
+Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions)
 {
     this->name = name;
     this->radius = radius;
@@ -98,7 +99,7 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, /*
 
     this->position = pos; // astroCoords.ToPosition();
 
-    this->color = glm::vec4(color, 1.0f);
+    this->color = color;
 
 
     std::cout << "New star generated named " << name << std::endl;
@@ -142,8 +143,10 @@ void Star::define(int subdivisions)
     VBO starVBO(vertices);
     EBO starEBO(indices);
 
+    unsigned long long whatIsThisDataType = 0;
+
     starVAO.LinkAttribute(starVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-    starVAO.LinkAttribute(starVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+    starVAO.LinkAttribute(starVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
     starVAO.Unbind();
     starVBO.Unbind();
@@ -155,7 +158,7 @@ void Star::define(int subdivisions)
     VBO flareVBO(point);
 
     flareVAO.LinkAttribute(flareVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-    flareVAO.LinkAttribute(flareVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+    flareVAO.LinkAttribute(flareVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
     flareVAO.Unbind();
     flareVBO.Unbind();
@@ -172,7 +175,10 @@ void Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Texture fla
 
     glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
     std::vector<Shader> shaders = { flareShader, shader };
-    camera.Matrix(60.0f, (glm::distance(position * scale, camera.Position) < 1e-2 ? 1e-9 : 1e-2), 1e6f * scale, shaders, "camMatrix");
+
+    float nearPlane = glm::distance(position * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
+
+    camera.Matrix(60.0f, nearPlane, 1e6f * scale, shaders, "camMatrix");
 
     shader.Activate();
     starVAO.Bind();
@@ -182,10 +188,10 @@ void Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Texture fla
     flareShader.Activate();
     glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
     glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
-    // std::cout << name << " evirradiance " << irradiance + glm::max(6.0f * glm::sqrt(luminosity), 5.0f) << " watts" << std::endl;
+    
     // std::cout << name << " distance is " << distance << " meters" << std::endl;
     // std::cout << "this star is at (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
-    // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl;
+    // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl; 
 
     flareVAO.Bind();
 
@@ -193,7 +199,7 @@ void Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Texture fla
     flareTex.Bind();
     flareTex.texUnit(flareShader, "tex0", 0);
 
-    // glDrawArrays(GL_POINTS, 0, 1);
+    if(renderFlares) { glDrawArrays(GL_POINTS, 0, 1); }
     flareVAO.Unbind();
 }
 
@@ -248,7 +254,7 @@ void StarSystem::deleteSystem()
 
 
 
-std::vector<Vertex> StarSystem::defineSphereVertices(float radius, glm::vec4 color, glm::vec3 position, int subdivisions)
+std::vector<Vertex> StarSystem::defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions)
 {
     std::vector<Vertex> vertices = {};
 

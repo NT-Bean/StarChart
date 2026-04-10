@@ -20,6 +20,7 @@ public:
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f); // unit is lightyears right up until you render it
 
     static float scale;
+    static bool renderFlares;
     static Shader defaultStarShader;
     static Shader defaultFlareShader;
     static Texture defaultFlareTex;
@@ -47,7 +48,7 @@ public:
 
         std::string name = "unknown star";
         float radius = 1.0f; // in solar radii
-        glm::vec4 color = glm::vec4(1.0, 0.0f, 1.0f, 1.0f);
+        glm::vec3 color = glm::vec3(1.0, 0.0f, 1.0f);
         glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f); // unit is lightyears right up until you render it
         glm::vec3 absolutePos = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -77,7 +78,7 @@ public:
     void defineSystem();
     void deleteSystem();
 
-    static std::vector<Vertex> defineSphereVertices(float radius, glm::vec4 color, glm::vec3 position, int subdivisions);
+    static std::vector<Vertex> defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions);
     static std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions);
 };
 

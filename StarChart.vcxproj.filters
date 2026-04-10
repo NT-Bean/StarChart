@@ -74,9 +74,6 @@
     <ClInclude Include="systems.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="text.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\flare.frag">
