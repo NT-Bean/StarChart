@@ -177,21 +177,19 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     starVAO.Unbind();
 
-    flareShader.Activate();
-    glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
-    glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
-    
-    // std::cout << name << " distance is " << distance << " meters" << std::endl;
-    // std::cout << "this star is at (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
-    // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl; 
+    if(renderFlares)
+    {
+        flareShader.Activate();
+        glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
+        glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
 
-    flareVAO.Bind();
+        flareVAO.Bind();
 
-    glActiveTexture(GL_TEXTURE0);
-    flareTex.Bind();
-    flareTex.texUnit(flareShader, "tex0", 0);
-
-    if(renderFlares) { glDrawArrays(GL_POINTS, 0, 1); }
+        glActiveTexture(GL_TEXTURE0);
+        flareTex.Bind();
+        flareTex.texUnit(flareShader, "tex0", 0);
+        glDrawArrays(GL_POINTS, 0, 1);
+    }
     flareVAO.Unbind();
 }
 
