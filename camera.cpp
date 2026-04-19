@@ -15,7 +15,7 @@ Camera::Camera(int width, int height, glm::vec3 position, float scale)
 
 void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform)
 {
-	// Initializes matrices since otherwise they will be the null matrix
+    // Initializes matrices since otherwise they will be the null matrix
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
 
@@ -24,11 +24,18 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<S
 	// Adds perspective to the scene
 	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
-	// Exports the camera matrix to the Vertex Shader
-    for (int i = 0; i < shaders.size(); i++)
-    {
-        glUniformMatrix4fv(glGetUniformLocation(shaders[i].ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
-    }
+	// Precompute the camera matrix
+	glm::mat4 camMat = projection * view;
+
+	// Upload the camera matrix to each shader while that shader is active
+	for (int i = 0; i < (int)shaders.size(); i++)
+	{
+		// Ensure the shader program is bound before setting uniforms
+		shaders[i].Activate();
+		GLint loc = glGetUniformLocation(shaders[i].ID, uniform);
+		if (loc != -1)
+			glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(camMat));
+	}
 }
 
 

@@ -1,4 +1,4 @@
-// failed build count: 47
+﻿// failed build count: 47
 
 #include <iostream>
 #include <vector>
@@ -86,18 +86,20 @@ int main(int argc, char **argv)
     Systems::init(
         std::vector<StarSystem> {
 
-            StarSystem(std::vector<Star> {
-                   // name  rad.  sur temp luminosity      pos              subdivisions
-                Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f,0.0f,0.0f), 128)
-             // name           astronomical coordinates          dist.  flare texture  star shader   flare shader  influence radius
-            }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
+        StarSystem(std::vector<Star> {
+            Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f), 128)
+        }, "Solar System", AstroCoords(0, 0, 0.0f, 0, 0, 0.0f, 0.0f), 0.1f),
 
-            StarSystem(std::vector<Star> {
-                Star("Procyon A", 2.043f, 6582.0f, 7.049f, glm::vec3(0.0f,0.0f,0.0f), 128)
-            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), 0.1f)
+        StarSystem(std::vector<Star> {
+            Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f), 128)
+        }, "Alpha Centauri", AstroCoords(0, 0, 0.0f, 0, 0, 0.0f, 0.0f), 0.1f),
     });
 
-
+    /*
+    StarSystem(std::vector<Star> {
+                Star("Procyon A", 2.043f, 6582.0f, 7.049f, glm::vec3(0.0f,0.0f,0.0f), 128)
+            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), 0.1f)    
+    */
     std::cout << "ardess " << Systems::systems[1].bodies[0].system << std::endl;
     glm::vec3 whadafuq = Systems::systems[1].bodies[0].position + Systems::systems[1].bodies[0].system->position;
     std::cout << " absolute pos of pork yawn is (" << whadafuq.x << ", " << whadafuq.y << ", " << whadafuq.z << ")" << std::endl;
@@ -140,7 +142,7 @@ int main(int argc, char **argv)
         if (Systems::boundSystem != -1)
         {
             float camDistance = glm::distance(Systems::systems[Systems::boundSystem].position, camera.Position / StarSystem::scale);
-            camera.speed = (camDistance <= 1e-6) ? (2e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 200.0f));
+            camera.speed = (camDistance <= 4e-6) ? (5e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 200.0f));
             std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
         }
 
