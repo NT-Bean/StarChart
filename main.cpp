@@ -29,7 +29,7 @@ int height = 720;
 // consts
 constexpr float pi = glm::pi<float>();
 
-std::vector<Vertex> eclipticPlane =
+std::vector<Vertex> equatorialPlane =
 {
     Vertex(glm::vec3(-500.0f, 0.0f, -500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
     Vertex(glm::vec3(500.0f, 0.0f, -500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
@@ -90,11 +90,11 @@ int main(int argc, char **argv)
                    // name  rad.  sur temp luminosity      pos              subdivisions
                 Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f,0.0f,0.0f), 128)
              // name           astronomical coordinates          dist.  flare texture  star shader   flare shader  influence radius
-            }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), Texture(), Shader(), Shader(), 0.1f),
+            }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
 
             StarSystem(std::vector<Star> {
                 Star("Procyon A", 2.043f, 6582.0f, 7.049f, glm::vec3(0.0f,0.0f,0.0f), 128)
-            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), Texture(), Shader(), Shader(), 0.1f)
+            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), 0.1f)
     });
 
 
@@ -104,10 +104,10 @@ int main(int argc, char **argv)
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
 
-    /*
+    /* // uncomment for the equatorial plane
     VAO planeVAO;
     planeVAO.Bind();
-    VBO planeVBO(eclipticPlane);
+    VBO planeVBO(equatorialPlane);
     planeVAO.LinkAttribute(planeVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
     planeVAO.LinkAttribute(planeVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
@@ -157,20 +157,10 @@ int main(int argc, char **argv)
         planeVAO.Bind();
         glDrawArrays(GL_TRIANGLES, 0, 6);
         planeVAO.Unbind();
-        */
-
-        // stars.drawSystem(shaderProgram, flareShaderProgram, flareTex, camera);
-
-        /*
-        std::cout << "camera pos: (" << camera.Position.x / StarSystem::scale << ", " << camera.Position.y / StarSystem::scale << ", " << camera.Position.z / StarSystem::scale << std::endl;
-        std::cout << "dist to procyon: " << glm::distance(Systems::systems[1].position, camera.Position / StarSystem::scale) << std::endl;
-        std::cout << "prawn yak position (" << Systems::systems[1].position.x << ", " << Systems::systems[1].position.y << ", " << Systems::systems[1].position.z << ")" << std::endl;
-        std::cout << "prawn yak a pos (" << Systems::systems[1].bodies[0].absolutePos.x << ", " << Systems::systems[1].bodies[0].absolutePos.y << ", " << Systems::systems[1].bodies[0].absolutePos.z << ")" << std::endl;
-        */
+        */ // this all needs to be retrofitted
 
         Systems::drawAll(camera);
-        Systems::systems[0].bodies[0].draw(Systems::systems[0].starShader, Systems::systems[0].flareShader, camera, Systems::systems[0].flareTex);
-
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

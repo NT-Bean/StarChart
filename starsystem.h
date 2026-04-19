@@ -21,15 +21,13 @@ public:
 
     static float scale;
     static bool renderFlares;
+
     static Shader defaultStarShader;
     static Shader defaultFlareShader;
     static Texture defaultFlareTex;
 
     int boundStar = -1;
     static float influenceRadius;
-
-    Texture flareTex;
-    Shader starShader, flareShader;
 
     struct AstroCoords
     {
@@ -44,6 +42,9 @@ public:
     struct Star
     {
         StarSystem* system = NULL;
+
+        Texture flareTex;
+        Shader starShader, flareShader;
 
         std::string name = "unknown star";
         float radius = 1.0f; // in solar radii
@@ -63,20 +64,25 @@ public:
 
         Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions);
         Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions);
+        Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+        Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
 
+        void logInit();
         void define(int subdivisions);
-        void draw(Shader& shader, Shader& flareShader, Camera& camera, Texture flareTex);
+        void draw(Shader starShader, Shader flareShader, Texture flareTex, Camera& camera);
     };
 
 
     std::vector<Star> bodies = {};
 
-    StarSystem(std::vector<Star> stars, std::string name, AstroCoords astroCoords, Texture flareTex, Shader starShader, Shader flareShader, float bindingRadius);
+    StarSystem(std::vector<Star> stars, std::string name, AstroCoords astroCoords, float bindingRadius);
 
     void drawSystem(Camera& camera);
     void defineSystem();
     void deleteSystem();
 
+
+    static glm::vec4 surfaceTempToColor(float temperature);
     static std::vector<Vertex> defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions);
     static std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions);
 };

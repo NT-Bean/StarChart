@@ -41,9 +41,209 @@ Star::Star(std::string name, float radius, float temperature, float luminosity, 
     this->name = name;
     this->radius = radius;
     this->luminosity = luminosity;
-
     this->position = pos; // astroCoods.ToPosition();
+    this->color = surfaceTempToColor(temperature);
 
+    logInit();
+    
+    define(subdivisions);
+
+    std::cout << std::endl;
+}
+Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions)
+{
+    this->name = name;
+    this->radius = radius;
+    this->luminosity = luminosity;
+    this->position = pos; // astroCoords.ToPosition();
+    this->color = color;
+    
+    logInit();
+
+    define(subdivisions);
+
+    std::cout << std::endl;
+}
+Star::Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex)
+{
+
+    this->name = name;
+    this->radius = radius;
+    this->luminosity = luminosity;
+    this->position = pos; // astroCoods.ToPosition();
+    this->color = surfaceTempToColor(temperature);
+
+    this->starShader = starShader;
+    this->flareShader = flareShader;
+    this->flareTex = flareTex;
+
+    logInit();
+
+    std::cout << std::endl;
+}
+Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex)
+{
+    this->name = name;
+    this->radius = radius;
+    this->luminosity = luminosity;
+    this->position = pos; // astroCoords.ToPosition();
+    this->color = color;
+
+    this->starShader = starShader;
+    this->flareShader = flareShader;
+    this->flareTex = flareTex;
+
+    logInit();
+
+    define(subdivisions);
+
+    std::cout << std::endl;
+}
+
+void Star::logInit()
+{
+    std::cout << "New star generated named " << name << std::endl;
+    std::cout << name << "'s radius (R_sol) is: " << radius << std::endl;
+    std::cout << "The color of " << name << " is (" << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
+
+    std::cout << name << " is located at (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
+    std::cout << name << "'s scale pos is (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
+
+    std::cout << "The luminosity of " << name << " is " << luminosity << std::endl;
+}
+
+void Star::define(int subdivisions)
+{
+    if (subdivisions % 4 != 0 || subdivisions < 12)
+    {
+        subdivisions = 16;
+    }
+
+    if (system != NULL) { absolutePos = position + system->position; }
+    else { absolutePos = position; }
+
+    /*
+    // std::cout << "tamam keyboard (" << absolutePos.x << ", " << absolutePos.y << ", " << absolutePos.z << ")" << std::endl;
+    std::cout << "mine doesnt do that keyboard (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
+    if (system != NULL)
+    {
+        std::cout << "hellp theres a woman talking in ear about no shit (" << system->position.x << ", " << system->position.y << ", " << system->position.z << ")" << std::endl;
+    }
+    */
+
+    vertices = defineSphereVertices(radius, color, absolutePos, subdivisions);
+    indices = defineSphereIndices(vertices, subdivisions);
+
+    starVAO.Bind();
+    VBO starVBO(vertices);
+    EBO starEBO(indices);
+
+    starVAO.LinkAttribute(starVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
+    starVAO.LinkAttribute(starVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+
+    starVAO.Unbind();
+    starVBO.Unbind();
+    starEBO.Unbind();
+
+    flareVAO.Bind();
+
+    std::vector<Vertex> point = { Vertex(absolutePos * scale, color) };
+    VBO flareVBO(point);
+
+    flareVAO.LinkAttribute(flareVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
+    flareVAO.LinkAttribute(flareVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+
+    flareVAO.Unbind();
+    flareVBO.Unbind();
+}
+
+void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera& camera)
+{
+    if (system != NULL) { absolutePos = position + system->position; }
+    else { absolutePos = position; }
+
+    float distance = glm::distance(absolutePos, camera.Position / scale) * 299792458.0f * 86400 * 365; // converting scaled distance to meters
+    float irradiance = (luminosity * 3.827e26f) / (4 * glm::pi<float>() * distance * distance); // converts luminosity to watts inside equation
+
+    glUniform3f(glGetUniformLocation(starShader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+    std::vector<Shader> shaders = { flareShader, starShader };
+
+    float nearPlane = glm::distance(position * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
+
+    camera.Matrix(60.0f, nearPlane, 1e6f * scale, shaders, "camMatrix");
+
+    starShader.Activate();
+    starVAO.Bind();
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    starVAO.Unbind();
+
+    flareShader.Activate();
+    glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
+    glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
+    
+    // std::cout << name << " distance is " << distance << " meters" << std::endl;
+    // std::cout << "this star is at (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
+    // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl; 
+
+    flareVAO.Bind();
+
+    glActiveTexture(GL_TEXTURE0);
+    flareTex.Bind();
+    flareTex.texUnit(flareShader, "tex0", 0);
+
+    if(renderFlares) { glDrawArrays(GL_POINTS, 0, 1); }
+    flareVAO.Unbind();
+}
+
+
+StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords astroCoords, float influenceRadius)
+{
+    this->bodies = bodies;
+    this->name = name;
+    this->position = astroCoords.ToPosition();
+    this->influenceRadius = influenceRadius;
+
+    for (int i = 0; i < bodies.size(); i++)
+    {
+        this->bodies[i].system = this;
+        std::cout << "setting system of " << this->bodies[i].name << " to " << this << std::endl;
+    }
+}
+
+void StarSystem::defineSystem()
+{
+    for (int i = 0; i < bodies.size(); i++)
+    {
+        bodies[i].system = this;
+        bodies[i].define(bodies[i].subdivisions);
+    }
+}
+
+void StarSystem::drawSystem(Camera& camera)
+{
+    for (int i = 0; i < bodies.size(); i++)
+    {
+        bodies[i].draw(
+            bodies[i].starShader.ID != NULL ? bodies[i].starShader : StarSystem::defaultStarShader,
+            bodies[i].flareShader.ID != NULL ? bodies[i].flareShader : StarSystem::defaultFlareShader,
+            bodies[i].flareTex.ID != NULL ? bodies[i].flareTex : StarSystem::defaultFlareTex,
+            camera
+        );
+    }
+}
+
+void StarSystem::deleteSystem()
+{
+    for (int i = 0; i < bodies.size(); i++)
+    {
+        bodies[i].starVAO.Delete();
+        bodies[i].flareVAO.Delete();
+    }
+}
+
+
+glm::vec4 StarSystem::surfaceTempToColor(float temperature)
+{
     temperature /= 100.0f;
     float red = 255.0f;
     float green = 0.0f;
@@ -75,183 +275,8 @@ Star::Star(std::string name, float radius, float temperature, float luminosity, 
         blue = temperature - 10.0f;
         blue = 138.51773f * glm::log(blue) - 305.0448f;
     }
-    this->color = glm::vec3(red / 255.0f, green / 255.0f, blue / 255.0f);
-
-
-    std::cout << "New star generated named " << name << std::endl;
-    std::cout << name << "'s radius (R_sol) is: " << radius << std::endl;
-    std::cout << "The color of " << name << " is (" << red << ", " << green << ", " << blue << ")" << std::endl;
-
-    std::cout << name << " is located at (" << this->position.x << ", " << this->position.y << ", " << this->position.z << ")" << std::endl;
-    std::cout << name << "'s scale pos is (" << this->position.x * scale << ", " << this->position.y * scale << ", " << this->position.z * scale << ")" << std::endl;
-
-    std::cout << "The luminosity of " << name << " is " << luminosity << std::endl;
-
-    define(subdivisions);
-
-    std::cout << std::endl;
+    return glm::vec4(red / 255.0f, green / 255.0f, blue / 255.0f, 1.0f);
 }
-Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions)
-{
-    this->name = name;
-    this->radius = radius;
-    this->luminosity = luminosity;
-
-    this->position = pos; // astroCoords.ToPosition();
-
-    this->color = color;
-
-
-    std::cout << "New star generated named " << name << std::endl;
-    std::cout << name << "'s radius (R_sol) is: " << radius << std::endl;
-    std::cout << "The color of " << name << " is (" << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
-
-    std::cout << name << " is located at (" << this->position.x << ", " << this->position.y << ", " << this->position.z << ")" << std::endl;
-    std::cout << name << "'s scale pos is (" << this->position.x * scale << ", " << this->position.y * scale << ", " << this->position.z * scale << ")" << std::endl;
-
-    std::cout << "The luminosity of " << name << " is " << luminosity << std::endl;
-
-    define(subdivisions);
-
-    std::cout << std::endl;
-}
-
-
-void Star::define(int subdivisions)
-{
-    if (subdivisions % 4 != 0 || subdivisions < 12)
-    {
-        subdivisions = 16;
-    }
-
-    if (system != NULL) { absolutePos = position + system->position; }
-    else { absolutePos = position; }
-
-    /*
-    // std::cout << "tamam keyboard (" << absolutePos.x << ", " << absolutePos.y << ", " << absolutePos.z << ")" << std::endl;
-    std::cout << "mine doesnt do that keyboard (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
-    if (system != NULL)
-    {
-        std::cout << "hellp theres a woman talking in ear about no shit (" << system->position.x << ", " << system->position.y << ", " << system->position.z << ")" << std::endl;
-    }
-    */
-
-    vertices = defineSphereVertices(radius, color, absolutePos, subdivisions);
-    indices = defineSphereIndices(vertices, subdivisions);
-
-    starVAO.Bind();
-    VBO starVBO(vertices);
-    EBO starEBO(indices);
-
-    unsigned long long whatIsThisDataType = 0;
-
-    starVAO.LinkAttribute(starVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-    starVAO.LinkAttribute(starVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
-
-    starVAO.Unbind();
-    starVBO.Unbind();
-    starEBO.Unbind();
-
-    flareVAO.Bind();
-
-    std::vector<Vertex> point = { Vertex(absolutePos * scale, color) };
-    VBO flareVBO(point);
-
-    flareVAO.LinkAttribute(flareVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-    flareVAO.LinkAttribute(flareVBO, 1, 3, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
-
-    flareVAO.Unbind();
-    flareVBO.Unbind();
-}
-
-void Star::draw(Shader& shader, Shader& flareShader, Camera& camera, Texture flareTex)
-{
-    if (system != NULL) { absolutePos = position + system->position; }
-    else { absolutePos = position; }
-
-    float distance = glm::distance(absolutePos, camera.Position / scale) * 299792458.0f * 86400 * 365; // converting scaled distance to meters
-    float irradiance = (luminosity * 3.827e26f) / (4 * glm::pi<float>() * distance * distance); // converts luminosity to watts inside equation
-
-
-    glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-    std::vector<Shader> shaders = { flareShader, shader };
-
-    float nearPlane = glm::distance(position * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
-
-    camera.Matrix(60.0f, nearPlane, 1e6f * scale, shaders, "camMatrix");
-
-    shader.Activate();
-    starVAO.Bind();
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    starVAO.Unbind();
-
-    flareShader.Activate();
-    glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
-    glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
-    
-    // std::cout << name << " distance is " << distance << " meters" << std::endl;
-    // std::cout << "this star is at (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
-    // std::cout << "camera position is (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")" << std::endl << std::endl; 
-
-    flareVAO.Bind();
-
-    glActiveTexture(GL_TEXTURE0);
-    flareTex.Bind();
-    flareTex.texUnit(flareShader, "tex0", 0);
-
-    if(renderFlares) { glDrawArrays(GL_POINTS, 0, 1); }
-    flareVAO.Unbind();
-}
-
-
-StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords astroCoords, Texture flareTex, Shader starShader, Shader flareShader, float influenceRadius)
-{
-    this->bodies = bodies;
-    this->name = name;
-    this->position = astroCoords.ToPosition();
-    this->flareTex = flareTex;
-    this->starShader = starShader;
-    this->flareShader = flareShader;
-    this->influenceRadius = influenceRadius;
-
-    for (int i = 0; i < bodies.size(); i++)
-    {
-        this->bodies[i].system = this;
-        std::cout << "setting system of " << this->bodies[i].name << " to " << this << std::endl;
-    }
-}
-
-void StarSystem::defineSystem()
-{
-    for (int i = 0; i < bodies.size(); i++)
-    {
-        bodies[i].system = this;
-        bodies[i].define(bodies[i].subdivisions);
-    }
-}
-
-void StarSystem::drawSystem(Camera& camera)
-{
-    for (int i = 0; i < bodies.size(); i++)
-    {
-        bodies[i].draw(
-            starShader.ID != NULL ? starShader : StarSystem::defaultStarShader,
-            flareShader.ID != NULL ? flareShader : StarSystem::defaultFlareShader,
-            camera,
-            flareTex.ID != NULL ? flareTex : StarSystem::defaultFlareTex
-        );
-    }
-}
-
-void StarSystem::deleteSystem()
-{
-    for (int i = 0; i < bodies.size(); i++)
-    {
-        bodies[i].starVAO.Delete();
-        bodies[i].flareVAO.Delete();
-    }
-}
-
 
 
 std::vector<Vertex> StarSystem::defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions)
