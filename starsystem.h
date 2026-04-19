@@ -28,9 +28,8 @@ public:
     int boundStar = -1;
     static float influenceRadius;
 
-    Texture flareTex = Texture(NULL);
-    Shader starShader = Shader(NULL);
-    Shader flareShader = Shader(NULL);
+    Texture flareTex;
+    Shader starShader, flareShader;
 
     struct AstroCoords
     {

@@ -1,4 +1,4 @@
-// failed build count: 41
+// failed build count: 47
 
 #include <iostream>
 #include <vector>
@@ -90,11 +90,11 @@ int main(int argc, char **argv)
                    // name  rad.  sur temp luminosity      pos              subdivisions
                 Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f,0.0f,0.0f), 128)
              // name           astronomical coordinates          dist.  flare texture  star shader   flare shader  influence radius
-            }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), Texture(NULL), Shader(NULL), Shader(NULL), 0.1f),
+            }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), Texture(), Shader(), Shader(), 0.1f),
 
             StarSystem(std::vector<Star> {
                 Star("Procyon A", 2.043f, 6582.0f, 7.049f, glm::vec3(0.0f,0.0f,0.0f), 128)
-            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), Texture(NULL), Shader(NULL), Shader(NULL), 0.1f)
+            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), Texture(), Shader(), Shader(), 0.1f)
     });
 
 

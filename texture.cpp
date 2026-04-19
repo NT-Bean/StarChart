@@ -42,9 +42,9 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
     // Unbind texture
     glBindTexture(texType, 0);
 }
-Texture::Texture(int probablyNULL)
+Texture::Texture()
 {
-    ID = probablyNULL;
+    this->ID = NULL;
 }
 
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)

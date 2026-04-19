@@ -4,9 +4,9 @@ typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
 
 float StarSystem::scale = 1e4f;
-Shader StarSystem::defaultStarShader = Shader(NULL);
-Shader StarSystem::defaultFlareShader = Shader(NULL);
-Texture StarSystem::defaultFlareTex = Texture(NULL);
+Shader StarSystem::defaultStarShader = Shader();
+Shader StarSystem::defaultFlareShader = Shader();
+Texture StarSystem::defaultFlareTex = Texture();
 
 bool StarSystem::renderFlares = true;
 
