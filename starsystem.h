@@ -50,7 +50,9 @@ public:
         float radius = 1.0f; // in solar radii
         glm::vec3 color = glm::vec3(1.0, 0.0f, 1.0f);
         glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f); // unit is lightyears right up until you render it
-        glm::vec3 absolutePos = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 absolutePos = glm::vec3(0.0f, 0.0f, 0.0f); // misnomer; should really be called "renderPosition" but i'm scared i'm gonna confuse myself more
+
+        bool posIsRelative = true;
 
         int subdivisions = 128;
 
@@ -62,10 +64,18 @@ public:
 
         VAO flareVAO;
 
-        Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions);
+        
         Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions);
-        Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+        Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions);
+
         Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+        Star(std::string name, float radius, float temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+            
+        Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions);
+        Star(std::string name, float radius, float temperature, float luminosity, AstroCoords astroCoords, int subdivisions);
+
+        Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+        Star(std::string name, float radius, float temperature, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
 
         void logInit();
         void define(int subdivisions);
@@ -82,7 +92,7 @@ public:
     void deleteSystem();
 
 
-    static glm::vec4 surfaceTempToColor(float temperature);
+    static glm::vec3 surfaceTempToColor(float temperature);
     static std::vector<Vertex> defineSphereVertices(float radius, glm::vec3 color, glm::vec3 position, int subdivisions);
     static std::vector<GLuint> defineSphereIndices(std::vector<Vertex> vertices, int subdivisions);
 };

@@ -87,22 +87,14 @@ int main(int argc, char **argv)
         std::vector<StarSystem> {
 
         StarSystem(std::vector<Star> {
-            Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f), 128)
-        }, "Solar System", AstroCoords(0, 0, 0.0f, 0, 0, 0.0f, 0.0f), 0.1f),
+            Star("Sol", 1.0f, 5772.0f, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
+        }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
 
         StarSystem(std::vector<Star> {
-            Star("Sol", 1.0f, 5772.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f), 128)
-        }, "Alpha Centauri", AstroCoords(0, 0, 0.0f, 0, 0, 0.0f, 0.0f), 0.1f),
+            Star("Alpha Centauri A", 1.2175f, 5804.0f, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
+            Star("Alpha Centauri B", 0.8591f, 5207.0f, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128)
+        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.1f)
     });
-
-    /*
-    StarSystem(std::vector<Star> {
-                Star("Procyon A", 2.043f, 6582.0f, 7.049f, glm::vec3(0.0f,0.0f,0.0f), 128)
-            }, "Procyon", AstroCoords(7, 39, 18.11950, 5, 13, 29.9552, 11.46f), 0.1f)    
-    */
-    std::cout << "ardess " << Systems::systems[1].bodies[0].system << std::endl;
-    glm::vec3 whadafuq = Systems::systems[1].bodies[0].position + Systems::systems[1].bodies[0].system->position;
-    std::cout << " absolute pos of pork yawn is (" << whadafuq.x << ", " << whadafuq.y << ", " << whadafuq.z << ")" << std::endl;
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
 
