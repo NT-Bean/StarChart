@@ -31,7 +31,7 @@ void Systems::checkInfluence(Camera& camera)
 
                 camera.Position -= Systems::systems[Systems::boundSystem].position * StarSystem::scale;
                 glm::vec3 oldPos = Systems::systems[Systems::boundSystem].position;
-                // std::cout << "oldPos (" << oldPos.x << ", " << oldPos.y << ", " << oldPos.z << ")" << std::endl;
+                std::cout << "oldPos (" << oldPos.x << ", " << oldPos.y << ", " << oldPos.z << ")" << std::endl;
 
                 for (int j = 0; j < Systems::systems.size(); j++)
                 {
@@ -46,8 +46,8 @@ void Systems::checkInfluence(Camera& camera)
     }
     else if (Systems::boundSystem == 0 && glm::distance(camera.Position / StarSystem::scale, Systems::systems[0].position) > Systems::systems[0].influenceRadius)
     {
-        std::cout << "star 0 was unbound from. ...wait, what was the point of that again?" << std::endl;
         Systems::boundSystem = -1;
+        std::cout << "star 0 was unbound from. ...wait, what was the point of that again?" << std::endl;
     }
     else if (glm::distance(camera.Position / StarSystem::scale, Systems::systems[Systems::boundSystem].position) > Systems::systems[boundSystem].influenceRadius)
     {

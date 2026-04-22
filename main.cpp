@@ -87,13 +87,15 @@ int main(int argc, char **argv)
         std::vector<StarSystem> {
 
         StarSystem(std::vector<Star> {
-            Star("Sol", 1.0f, 5772.0f, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
+            //   name   rad.  temp.    lumin.      astronomical coordinates    dist.  # of subdivisions
+            Star("Sol", 1.0f, 5772, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
         }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
 
         StarSystem(std::vector<Star> {
-            Star("Alpha Centauri A", 1.2175f, 5804.0f, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
-            Star("Alpha Centauri B", 0.8591f, 5207.0f, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128)
-        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.1f)
+            Star("Alpha Centauri A", 1.2175f, 5804, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
+            Star("Alpha Centauri B", 0.8591f, 5207, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128),
+            Star("Proxima Centauri", 0.1542f, 2992, 1.5059f, AstroCoords(14, 29, 42.946, -62, 40, 46.16, 4.2465f), 128),
+        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.3f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
@@ -134,8 +136,12 @@ int main(int argc, char **argv)
         if (Systems::boundSystem != -1)
         {
             float camDistance = glm::distance(Systems::systems[Systems::boundSystem].position, camera.Position / StarSystem::scale);
-            camera.speed = (camDistance <= 4e-6) ? (5e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 200.0f));
+            camera.speed = (camDistance <= 4e-6) ? (5e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 100.0f));
             std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
+        }
+        else
+        {
+            camera.speed = 200.0f;
         }
 
         camera.Inputs(window, StarSystem::scale);

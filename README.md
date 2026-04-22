@@ -4,5 +4,6 @@
 *Coded with OpenGL and tears.*
 
 Current features include:
-- 2 accurately positioned stars.
-- I broke the sphere rendering somehow.
+- 3 accurately positioned stars.
+- Non-broken sphere rendering!
+- im gonna add more stars
