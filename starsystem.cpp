@@ -49,15 +49,15 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, gl
 
     std::cout << std::endl;
 }
-Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }
+// Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }
 
-Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, color, luminosity, pos, subdivisions)
-{
-    this->starShader = starShader;
-    this->flareShader = flareShader;
-    this->flareTex = flareTex;
-}
-Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions, starShader, flareShader, flareTex) { }
+//Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, color, luminosity, pos, subdivisions)
+//{
+//    this->starShader = starShader;
+//    this->flareShader = flareShader;
+//    this->flareTex = flareTex;
+//}
+//Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions, starShader, flareShader, flareTex) { }
 
 Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions) : Star::Star(name, radius, color, luminosity, astroCoords.ToPosition(), subdivisions)
 {
@@ -65,11 +65,11 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, As
 }
 Star::Star(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, astroCoords, subdivisions) { }
 
-Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, color, luminosity, astroCoords.ToPosition(), subdivisions, starShader, flareShader, flareTex)
-{
-    posIsRelative = false;
-}
-Star::Star(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, astroCoords, subdivisions, starShader, flareShader, flareTex) { }
+//Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, color, luminosity, astroCoords.ToPosition(), subdivisions, starShader, flareShader, flareTex)
+//{
+//    posIsRelative = false;
+//}
+//Star::Star(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, astroCoords, subdivisions, starShader, flareShader, flareTex) { }
 
 
 void Star::logInit()
@@ -86,10 +86,12 @@ void Star::logInit()
 
 void Star::define(int subdivisions)
 {
-    if (subdivisions % 4 != 0 || subdivisions < 12)
+    if (subdivisions < 12)
     {
-        subdivisions = 16;
+        this->subdivisions = 16;
     }
+
+    this->subdivisions -= this->subdivisions % 4;
 
     if (system != NULL)
     {
@@ -131,13 +133,15 @@ void Star::define(int subdivisions)
 
 void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera& camera)
 {
-    float distance = glm::distance(absolutePos, camera.Position / scale) * 299792458.0f * 86400 * 365; // converting scaled distance to meters
-    float irradiance = (luminosity * 3.827e26f) / (4 * glm::pi<float>() * distance * distance); // converts luminosity to watts inside equation
-
     glUniform3f(glGetUniformLocation(starShader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
     std::vector<Shader> shaders = { flareShader, starShader };
 
-    float nearPlane = glm::distance(absolutePos * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
+    float nearPlane = 0.01f;
+
+    if (Systems::boundSystem != -1)
+    {
+        nearPlane = glm::distance(absolutePos * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
+    }
 
     camera.Matrix(30.0f, nearPlane, 2e3f * scale, shaders, "camMatrix");
 
@@ -146,8 +150,13 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     starVAO.Unbind();
 
+    if (luminosity == 0 && glm::distance(absolutePos, camera.Position / scale) >= system->influenceRadius) { return; }
     if(renderFlares)
     {
+        float distance = glm::distance(absolutePos, camera.Position / scale) * 299792458.0f * 86400 * 365; // converting scaled distance to meters
+        float irradiance = (luminosity * 3.827e26f) / (4 * glm::pi<float>() * distance * distance); // converts luminosity to watts inside equation
+        // std::cout << name << " irradiance " << irradiance << std::endl;
+
         flareShader.Activate();
         glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
         glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
@@ -158,8 +167,9 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
         flareTex.Bind();
         flareTex.texUnit(flareShader, "tex0", 0);
         glDrawArrays(GL_POINTS, 0, 1);
+
+        flareVAO.Unbind();
     }
-    flareVAO.Unbind();
 }
 
 
@@ -167,7 +177,7 @@ StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords a
 {
     this->position = astroCoords.ToPosition();
     this->name = name;
-    this->influenceRadius = influenceRadius;
+    this->influenceRadius = glm::max(influenceRadius, 0.01f);
     this->bodies = bodies;
     
     for (int i = 0; i < bodies.size(); i++)

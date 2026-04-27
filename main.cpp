@@ -87,15 +87,19 @@ int main(int argc, char **argv)
         std::vector<StarSystem> {
 
         StarSystem(std::vector<Star> {
-            //   name   rad.  temp.    lumin.      astronomical coordinates    dist.  # of subdivisions
+            //   name   rad.  temp. lumin.      astronomical coordinates    dist.  # of subdivisions
             Star("Sol", 1.0f, 5772, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
         }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
 
         StarSystem(std::vector<Star> {
             Star("Alpha Centauri A", 1.2175f, 5804, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
             Star("Alpha Centauri B", 0.8591f, 5207, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128),
-            Star("Proxima Centauri", 0.1542f, 2992, 1.5059f, AstroCoords(14, 29, 42.946, -62, 40, 46.16, 4.2465f), 128),
-        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.3f)
+            Star("Proxima Centauri", 0.1542f, 2992, 0.00005f, AstroCoords(14, 29, 42.946, -62, 40, 46.16, 4.2465f), 96)
+        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.3f),
+
+        StarSystem(std::vector<Star> {
+            Star("Barnard's Star", 0.187f, 3195, 0.0004f, AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 96)
+        }, "Barnard's Star (sys)", AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 0.05f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
@@ -120,7 +124,7 @@ int main(int argc, char **argv)
     glfwSwapInterval(1); // turn on vsync (limit framrate)
 
     double prevTime = glfwGetTime();
-    // std::cout << "FPS: ";
+    std::cout << "FPS: ";
 
 
     while(!glfwWindowShouldClose(window))
@@ -128,7 +132,7 @@ int main(int argc, char **argv)
         double currentTime = glfwGetTime();
         int FPS = 1 / (currentTime - prevTime);
         prevTime = currentTime;
-        // std::cout << "\x1b[2K\rFPS: " << FPS;
+        std::cout << "\x1b[2K\rFPS: " << FPS;
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,7 +141,7 @@ int main(int argc, char **argv)
         {
             float camDistance = glm::distance(Systems::systems[Systems::boundSystem].position, camera.Position / StarSystem::scale);
             camera.speed = (camDistance <= 4e-6) ? (5e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 100.0f));
-            std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
+            // std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
         }
         else
         {
