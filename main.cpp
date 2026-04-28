@@ -31,13 +31,13 @@ constexpr float pi = glm::pi<float>();
 
 std::vector<Vertex> equatorialPlane =
 {
-    Vertex(glm::vec3(-500.0f, 0.0f, -500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
-    Vertex(glm::vec3(500.0f, 0.0f, -500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
-    Vertex(glm::vec3(-500.0f, 0.0f, 500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(-10.0f, 0.0f, -5000.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(10.0f, 0.0f, -5000.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
 
-    Vertex(glm::vec3(500.0f, 0.0f, -500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
-    Vertex(glm::vec3(-500.0f, 0.0f, 500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
-    Vertex(glm::vec3(500.0f, 0.0f, 500.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(-10.0f, 0.0f, -5000.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(10.0f, 0.0f, -5000.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
+    Vertex(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)),
 };
 
 
@@ -99,12 +99,17 @@ int main(int argc, char **argv)
 
         StarSystem(std::vector<Star> {
             Star("Barnard's Star", 0.187f, 3195, 0.0004f, AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 96)
-        }, "Barnard's Star (sys)", AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 0.05f)
+        }, "Barnard's Star (sys)", AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 0.05f),
+
+        StarSystem(std::vector<Star> {
+            Star("Sirius A", 1.7144f, 9845, 24.74f, AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 128),
+            Star("Sirius B", 0.008098f, 25000, 0.0f, AstroCoords(6, 45, 9.0, -16, 43, 6.0, 8.61f), 64)
+        }, "Sirius", AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 0.1f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
 
-    /* // uncomment for the equatorial plane
+    // uncomment for the equatorial plane
     VAO planeVAO;
     planeVAO.Bind();
     VBO planeVBO(equatorialPlane);
@@ -113,7 +118,7 @@ int main(int argc, char **argv)
 
     planeVAO.Unbind();
     planeVBO.Unbind();
-    */
+    
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -140,13 +145,14 @@ int main(int argc, char **argv)
         if (Systems::boundSystem != -1)
         {
             float camDistance = glm::distance(Systems::systems[Systems::boundSystem].position, camera.Position / StarSystem::scale);
-            camera.speed = (camDistance <= 4e-6) ? (5e-5f) : (glm::min(5e5f * camDistance * camDistance + 0.005f, 100.0f));
+            camera.speed = (camDistance <= 4e-6) ? (5e-9f * StarSystem::scale) : (glm::min(5e1f * StarSystem::scale * camDistance * camDistance + 5e-7f * StarSystem::scale, 0.01f * StarSystem::scale));
             // std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
         }
         else
         {
             camera.speed = 200.0f;
         }
+
 
         camera.Inputs(window, StarSystem::scale);
 
@@ -156,12 +162,11 @@ int main(int argc, char **argv)
 
         Systems::checkInfluence(camera);
 
-        /* // uncomment to enable drawing the equatorial plane
-        shaderProgram.Activate();
+        // uncomment to enable drawing the equatorial plane
+        StarSystem::defaultStarShader.Activate();
         planeVAO.Bind();
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // glDrawArrays(GL_TRIANGLES, 0, 6);
         planeVAO.Unbind();
-        */ // this all needs to be retrofitted
 
         Systems::drawAll(camera);
         

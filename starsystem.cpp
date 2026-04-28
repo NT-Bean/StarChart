@@ -4,7 +4,7 @@
 typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
 
-float StarSystem::scale = 1e4f;
+float StarSystem::scale = 1e3f;
 Shader StarSystem::defaultStarShader = Shader();
 Shader StarSystem::defaultFlareShader = Shader();
 Texture StarSystem::defaultFlareTex = Texture();
@@ -29,9 +29,9 @@ glm::vec3 AstroCoords::ToPosition()
     double raRad = glm::radians<double>(raDecimal * 15);
     double decRad = glm::radians<double>(decDecimal);
 
-    float x = distance * glm::cos(decRad) * glm::cos(raRad);
+    float x = distance * glm::cos(decRad) * glm::cos(raRad + 1.5708f);
     float y = distance * glm::sin(decRad);
-    float z = distance * glm::cos(decRad) * glm::sin(raRad);
+    float z = distance * glm::cos(decRad) * glm::sin(raRad + 1.5708f);
 
     return glm::vec3(x, y, z);
 }
@@ -136,14 +136,16 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
     glUniform3f(glGetUniformLocation(starShader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
     std::vector<Shader> shaders = { flareShader, starShader };
 
-    float nearPlane = 0.01f;
+    float farPlane = 1e4f * scale;
+    float nearPlane = glm::distance(camera.Position / scale, glm::vec3(0.0f,0.0f,0.0f)) <= 1e2f * scale ? 1e-2f * scale: 1e2f * scale;
 
     if (Systems::boundSystem != -1)
     {
+        farPlane = 1e3f * scale;
         nearPlane = glm::distance(absolutePos * scale, camera.Position) < 1e-6 * scale ? 1e-13 * scale : 1e-6 * scale;
     }
 
-    camera.Matrix(30.0f, nearPlane, 2e3f * scale, shaders, "camMatrix");
+    camera.Matrix(30.0f, nearPlane, farPlane, shaders, "camMatrix");
 
     starShader.Activate();
     starVAO.Bind();
