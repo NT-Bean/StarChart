@@ -99,8 +99,9 @@ void Star::define(int subdivisions)
         {
             position -= system->position;
         }
-        absolutePos = position + system->position; std::cout << "sum bout sum system is exitent" << std::endl;
-        std::cout << "abs pos " << name << " (" << absolutePos.x << ", " << absolutePos.y << ", " << absolutePos.z << ")" << std::endl;
+        absolutePos = position + system->position;
+        // std::cout << "sum bout sum system is exitent" << std::endl;
+        // std::cout << "abs pos " << name << " (" << absolutePos.x << ", " << absolutePos.y << ", " << absolutePos.z << ")" << std::endl;
     }
 
     isFirstDefinition = false;

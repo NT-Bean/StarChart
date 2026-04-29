@@ -27,11 +27,11 @@ void Systems::checkInfluence(Camera& camera)
             if (glm::distance(camera.Position / StarSystem::scale, Systems::systems[i].position) < StarSystem::influenceRadius)
             {
                 Systems::boundSystem = i;
-                std::cout << "just bound to " << Systems::systems[Systems::boundSystem].name << " (" << Systems::boundSystem << ") buddeh" << std::endl;
+                std::cout << "\njust bound to " << Systems::systems[Systems::boundSystem].name << " (" << Systems::boundSystem << ") buddeh" << std::endl;
 
                 camera.Position -= Systems::systems[Systems::boundSystem].position * StarSystem::scale;
                 glm::vec3 oldPos = Systems::systems[Systems::boundSystem].position;
-                std::cout << "oldPos (" << oldPos.x << ", " << oldPos.y << ", " << oldPos.z << ")" << std::endl;
+                // std::cout << "oldPos (" << oldPos.x << ", " << oldPos.y << ", " << oldPos.z << ")" << std::endl;
 
                 for (int j = 0; j < Systems::systems.size(); j++)
                 {
@@ -47,11 +47,11 @@ void Systems::checkInfluence(Camera& camera)
     else if (Systems::boundSystem == 0 && glm::distance(camera.Position / StarSystem::scale, Systems::systems[0].position) > Systems::systems[0].influenceRadius)
     {
         Systems::boundSystem = -1;
-        std::cout << "star 0 was unbound from. ...wait, what was the point of that again?" << std::endl;
+        std::cout << "\nstar 0 was unbound from. ...wait, what was the point of that again?" << std::endl;
     }
     else if (glm::distance(camera.Position / StarSystem::scale, Systems::systems[Systems::boundSystem].position) > Systems::systems[boundSystem].influenceRadius)
     {
-        std::cout << Systems::systems[Systems::boundSystem].name << " (" << Systems::boundSystem << ") was unbound from. you are now floating in the interstellar medium" << std::endl;
+        std::cout << '\n' << Systems::systems[Systems::boundSystem].name << " (" << Systems::boundSystem << ") was unbound from. you are now floating in the interstellar medium" << std::endl;
         Systems::boundSystem = -1;
         camera.Position -= Systems::systems[0].position * StarSystem::scale;
         for (int i = 1; i < Systems::systems.size(); i++)
