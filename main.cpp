@@ -100,7 +100,7 @@ int main(int argc, char **argv)
             //   name   rad.  temp. lumin.      astronomical coordinates    dist.  # of subdivisions
             Star("Sol", 1.0f, 5772, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
         //  name           astronomical coordinates          dist.  influence radius
-        }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
+        }, "Solar System", AstroCoords(AstroCoords::Centralized), 0.1f),
 
         StarSystem(std::vector<Star> {
             Star("Alpha Centauri A", 1.2175f, 5804, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
@@ -110,16 +110,21 @@ int main(int argc, char **argv)
 
         StarSystem(std::vector<Star> {
             Star("Barnard's Star", 0.187f, 3195, 0.0004f, AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 96)
-        }, "Barnard's Star (sys)", AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 0.05f),
+        }, "Barnard's Star (sys)", AstroCoords(AstroCoords::Centralized), 0.05f),
 
         StarSystem(std::vector<Star> {
             Star("Sirius A", 1.7144f, 9845, 24.74f, AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 128),
             Star("Sirius B", 0.008098f, 25000, 0.0f, AstroCoords(6, 45, 9.0, -16, 43, 6.0, 8.61f), 64)
-        }, "Sirius", AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 0.1f),
+        }, "Sirius", AstroCoords(AstroCoords::Centralized), 0.1f),
 
         StarSystem(std::vector<Star> {
             Star("Epsilon Eridani", 0.738f, 5085, 0.32f, AstroCoords(3, 32, 55.84496, -9, 27, 29.7312f, 10.475f), 128)
-        }, "Epsilon Eridani (sys)", AstroCoords(3, 32, 55.84496, -9, 27, 29.7312f, 10.475f), 0.1f)
+        }, "Epsilon Eridani (sys)", AstroCoords(AstroCoords::Centralized), 0.1f),
+
+        StarSystem(std::vector<Star> {
+            Star("61 Cyg A", 0.667f, 4398, 0.15f, AstroCoords(21, 6, 53.9396, 38, 44, 57.902, 11.404f), 96),
+            Star("61 Cyg B", 0.594f, 4174, 0.097f, AstroCoords(21, 6, 55.2638, 38, 44, 31.359, 11.404f), 96)
+        }, "61 Cygni", AstroCoords(AstroCoords::Averaged), 0.1f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
@@ -205,12 +210,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void printMarquee()
 {
     int delayTime = 50;
-    std::cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=" << std::endl; sleepy(delayTime);
-    std::cout << " ,=====< ,--v--, ,-----, ,-----,   ,=====< v     v ,-----, ,-----, ,--v--, " << std::endl; sleepy(delayTime);
-    std::cout << "||          |    |     | |     |  ||       |     | |     | |     |    |    " << std::endl; sleepy(delayTime);
-    std::cout << " '=====,    |    |>---<| |>,---'  ||   *   >-----< |>---<| |>,---'    |    " << std::endl; sleepy(delayTime);
-    std::cout << "      ||    |    |     | | '---,  ||       |     | |     | | '---,    |    " << std::endl; sleepy(delayTime);
-    std::cout << "      ||   _|_  _|_   _|_|_   _|_ ||      _|_   _|_|_   _|_|    _|_  _|_   " << std::endl; sleepy(delayTime);
-    std::cout << " '=====' ~~~~~~~~~~~~~~~~~~~~~~~   '=====' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  " << std::endl; sleepy(delayTime);
-    std::cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" << std::endl; sleepy(delayTime);
+    std::cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=" << std::endl; sleepy(delayTime);
+    std::cout << "  ,=====; ,--v--, ,-----, ,-----,    ,=====< v     v ,-----, ,-----, ,--v--, " << std::endl; sleepy(delayTime);
+    std::cout << " ||          |    |     | |     |   ||       |     | |     | |     |    |    " << std::endl; sleepy(delayTime);
+    std::cout << "  '=====,    |    |>---<| |>,---'   ||   *   >-----< |>---<| |>,---'    |    " << std::endl; sleepy(delayTime);
+    std::cout << "       ||    |    |     | | '---,   ||       |     | |     | | '---,    |    " << std::endl; sleepy(delayTime);
+    std::cout << "  ,    ||   _|_  _|_   _|_|_   _|_  ||     , |_   _|_|_   _|_|_   _|_  _|_   " << std::endl; sleepy(delayTime);
+    std::cout << "  '=====' ~~~~~~~~~~~~~~~~~~~~~~~~   '=====' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << std::endl; sleepy(delayTime);
+    std::cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" << std::endl; sleepy(delayTime);
 }

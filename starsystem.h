@@ -35,11 +35,22 @@ public:
 
     struct AstroCoords
     {
-        double raDecimal;
-        double decDecimal;
+        enum SystemPosCalcType
+        {
+            Manual,
+            Centralized,
+            Averaged
+        };
+
+        enum SystemPosCalcType systemPosCalcType = Manual;
+
+        double raRad;
+        double decRad;
         float distance;
 
         AstroCoords(int raHours, int raMinutes, double raSeconds, int decDegrees, int decArcminutes, double decArcseconds, float distance);
+        AstroCoords(enum SystemPosCalcType systemPosCalcType);
+
         glm::vec3 ToPosition();
     };
 

@@ -22,17 +22,23 @@ AstroCoords::AstroCoords(int raHours, int raMinutes, double raSeconds, int decDe
     int raSign = (raHours > 0) - (raHours < 0);
     int decSign = (decDegrees > 0) - (decDegrees < 0);
 
-    this->raDecimal = (double)raHours + raSign * (double)raMinutes / 60.0f + raSign * raSeconds / 3600.0f;
-    // std::cout << "right ass " << raDecimal << std::endl;
-    this->decDecimal = (double)decDegrees + decSign * (double)decArcminutes / 60.0f + decSign * decArcseconds / 3600.0f;
-    // std::cout << "defamation " << decDecimal << std::endl;
+    double raDecimal = (double)raHours + raSign * (double)raMinutes / 60.0f + raSign * raSeconds / 3600.0f;
+    double decDecimal = (double)decDegrees + decSign * (double)decArcminutes / 60.0f + decSign * decArcseconds / 3600.0f;
+    
+    raRad = glm::radians<double>(15 * raDecimal);
+    decRad = glm::radians<double>(decDecimal);
 
 }
+AstroCoords::AstroCoords(enum SystemPosCalcType systemPosCalcType)
+{
+    this->systemPosCalcType = systemPosCalcType;
+    this->raRad = NULL; // all to be initialized later
+    this->decRad = NULL;
+    this->distance = NULL;
+}
+
 glm::vec3 AstroCoords::ToPosition()
 {
-    double raRad = glm::radians<double>(raDecimal * 15);
-    double decRad = glm::radians<double>(decDecimal);
-
     float x = distance * glm::cos(decRad) * glm::cos(raRad + 1.5708f);
     float y = distance * glm::sin(decRad);
     float z = distance * glm::cos(decRad) * glm::sin(raRad + 1.5708f);
@@ -185,7 +191,27 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
 
 StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords astroCoords, float influenceRadius)
 {
-    this->position = astroCoords.ToPosition();
+    switch (astroCoords.systemPosCalcType)
+    {
+    case AstroCoords::SystemPosCalcType::Manual:
+        if (verboseLog)
+            std::cout << "twerp" << name << std::endl;
+        break;
+    case AstroCoords::SystemPosCalcType::Averaged:
+        glm::vec3 average = glm::vec3(0.0f, 0.0f, 0.0f);
+        for (int i = 0; i < bodies.size(); i++)
+        {
+            average += bodies[i].absolutePos;
+        }
+        average /= bodies.size();
+        this->position = average;
+        break;
+    case AstroCoords::SystemPosCalcType::Centralized:
+    default:
+        this->position = bodies[0].absolutePos;
+        break;
+    }
+
     this->name = name;
     this->influenceRadius = glm::max(influenceRadius, 0.01f);
     this->bodies = bodies;
