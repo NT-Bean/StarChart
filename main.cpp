@@ -1,4 +1,12 @@
-﻿// failed build count: 47
+﻿// failed build count: 48
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define sleepy(ms) Sleep(ms)
+#else
+    #include <unistd.h>
+    #define sleepy(ms) usleep(ms * 1000) // usleep uses microseconds
+#endif
 
 #include <iostream>
 #include <vector>
@@ -8,13 +16,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <stb/stb_image.h>
-
-#include "VBO.h"
-#include "VAO.h"
-#include "EBO.h"
-#include "shaderClass.h"
-#include "camera.h"
-#include "texture.h"
 
 #include "starsystem.h"
 #include "systems.h"
@@ -43,14 +44,18 @@ std::vector<Vertex> equatorialPlane =
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+void printMarquee();
+
 int main(int argc, char **argv)
 {
+    printMarquee();
+
     for (int i = 0; i < argc; ++i)
     {
         if (strcmp(argv[i], "-h") == 0)
         {
-            std::cout << "i need help too man, the spheres aren't rendering" << std::endl << std::endl;
             std::cout << "'-f': prevents flares from rendering" << std::endl;
+            std::cout << "'-v': enables verbose logging. VERY verbose." << std::endl;
             std::cout << "'-h': take a wild guess" << std::endl << std::endl;
             return 0;
         }
@@ -58,6 +63,11 @@ int main(int argc, char **argv)
         {
             StarSystem::renderFlares = false;
             std::cout << "flares disabled" << std::endl;
+        }
+        if (strcmp(argv[i], "-v") == 0)
+        {
+            StarSystem::verboseLog = true;
+            std::cout << "verbose logging enabled" << std::endl;
         }
     }
 
@@ -89,6 +99,7 @@ int main(int argc, char **argv)
         StarSystem(std::vector<Star> {
             //   name   rad.  temp. lumin.      astronomical coordinates    dist.  # of subdivisions
             Star("Sol", 1.0f, 5772, 1.0f, AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 128)
+        //  name           astronomical coordinates          dist.  influence radius
         }, "Solar System", AstroCoords(0, 0, 0.0, 0, 0, 0.0, 0.0f), 0.1f),
 
         StarSystem(std::vector<Star> {
@@ -104,7 +115,11 @@ int main(int argc, char **argv)
         StarSystem(std::vector<Star> {
             Star("Sirius A", 1.7144f, 9845, 24.74f, AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 128),
             Star("Sirius B", 0.008098f, 25000, 0.0f, AstroCoords(6, 45, 9.0, -16, 43, 6.0, 8.61f), 64)
-        }, "Sirius", AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 0.1f)
+        }, "Sirius", AstroCoords(6, 45, 08.917, -16, 42, 58.02, 8.61f), 0.1f),
+
+        StarSystem(std::vector<Star> {
+            Star("Epsilon Eridani", 0.738f, 5085, 0.32f, AstroCoords(3, 32, 55.84496, -9, 27, 29.7312f, 10.475f), 128)
+        }, "Epsilon Eridani (sys)", AstroCoords(3, 32, 55.84496, -9, 27, 29.7312f, 10.475f), 0.1f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
@@ -184,4 +199,18 @@ int main(int argc, char **argv)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+
+void printMarquee()
+{
+    int delayTime = 50;
+    std::cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=" << std::endl; sleepy(delayTime);
+    std::cout << " ,=====< ,--v--, ,-----, ,-----,   ,=====< v     v ,-----, ,-----, ,--v--, " << std::endl; sleepy(delayTime);
+    std::cout << "||          |    |     | |     |  ||       |     | |     | |     |    |    " << std::endl; sleepy(delayTime);
+    std::cout << " '=====,    |    |>---<| |>,---'  ||   *   >-----< |>---<| |>,---'    |    " << std::endl; sleepy(delayTime);
+    std::cout << "      ||    |    |     | | '---,  ||       |     | |     | | '---,    |    " << std::endl; sleepy(delayTime);
+    std::cout << "      ||   _|_  _|_   _|_|_   _|_ ||      _|_   _|_|_   _|_|    _|_  _|_   " << std::endl; sleepy(delayTime);
+    std::cout << " '=====' ~~~~~~~~~~~~~~~~~~~~~~~   '=====' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  " << std::endl; sleepy(delayTime);
+    std::cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" << std::endl; sleepy(delayTime);
 }

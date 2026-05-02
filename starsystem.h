@@ -29,6 +29,10 @@ public:
     int boundStar = -1;
     static float influenceRadius;
 
+
+    static bool verboseLog;
+
+
     struct AstroCoords
     {
         double raDecimal;

@@ -10,6 +10,7 @@ Shader StarSystem::defaultFlareShader = Shader();
 Texture StarSystem::defaultFlareTex = Texture();
 
 bool StarSystem::renderFlares = true;
+bool StarSystem::verboseLog = false;
 
 float StarSystem::influenceRadius = 0.1f;
 
@@ -18,9 +19,12 @@ AstroCoords::AstroCoords(int raHours, int raMinutes, double raSeconds, int decDe
 {
     this->distance = distance;
 
-    this->raDecimal = (double)raHours + (double)raMinutes / 60.0f + raSeconds / 3600.0f;
+    int raSign = (raHours > 0) - (raHours < 0);
+    int decSign = (decDegrees > 0) - (decDegrees < 0);
+
+    this->raDecimal = (double)raHours + raSign * (double)raMinutes / 60.0f + raSign * raSeconds / 3600.0f;
     // std::cout << "right ass " << raDecimal << std::endl;
-    this->decDecimal = (double)decDegrees + (double)decArcminutes / 60.0f + decArcseconds / 3600.0f;
+    this->decDecimal = (double)decDegrees + decSign * (double)decArcminutes / 60.0f + decSign * decArcseconds / 3600.0f;
     // std::cout << "defamation " << decDecimal << std::endl;
 
 }
@@ -46,8 +50,6 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, gl
     this->color = color;
     
     logInit();
-
-    std::cout << std::endl;
 }
 // Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }
 
@@ -74,14 +76,19 @@ Star::Star(std::string name, float radius, int temperature, float luminosity, As
 
 void Star::logInit()
 {
-    std::cout << "New star generated named " << name << std::endl;
-    std::cout << name << "'s radius (R_sol) is: " << radius << std::endl;
-    std::cout << "The color of " << name << " is (" << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
+    if (verboseLog)
+    {
+        std::cout << "New star generated named " << name << std::endl;
+        std::cout << name << "'s radius (R_sol) is: " << radius << std::endl;
+        std::cout << "The color of " << name << " is (" << color.x << ", " << color.y << ", " << color.z << ")" << std::endl;
 
-    std::cout << name << " is located at (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
-    std::cout << name << "'s scale pos is (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
+        std::cout << name << " is located at (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
+        std::cout << name << "'s scale pos is (" << position.x * scale << ", " << position.y * scale << ", " << position.z * scale << ")" << std::endl;
 
-    std::cout << "The luminosity of " << name << " is " << luminosity << std::endl;
+        std::cout << "The luminosity of " << name << " is " << luminosity << std::endl;
+
+        std::cout << std::endl;
+    }
 }
 
 void Star::define(int subdivisions)
@@ -186,7 +193,8 @@ StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords a
     for (int i = 0; i < bodies.size(); i++)
     {
         this->bodies[i].system = this;
-        // std::cout << "setting system of " << this->bodies[i].name << " to " << this << std::endl;
+        if (verboseLog)
+            std::cout << "setting system of " << this->bodies[i].name << " to " << this << std::endl;
     }
 }
 
@@ -264,7 +272,9 @@ std::vector<Vertex> StarSystem::defineSphereVertices(float radius, glm::vec3 col
     std::vector<Vertex> vertices = {};
 
     double radiusLy = radius * 7.35355e-8 * scale; // converts solar radius to whatever the scale is in lightyears
-    std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
+
+    if(verboseLog)
+        std::cout << "generating points. radiusLy is defined as " << radiusLy << std::endl;
 
     constexpr float pi = glm::pi<float>();
 
