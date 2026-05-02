@@ -106,7 +106,7 @@ int main(int argc, char **argv)
             Star("Alpha Centauri A", 1.2175f, 5804, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
             Star("Alpha Centauri B", 0.8591f, 5207, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128),
             Star("Proxima Centauri", 0.1542f, 2992, 0.00005f, AstroCoords(14, 29, 42.946, -62, 40, 46.16, 4.2465f), 96)
-        }, "Alpha Centauri", AstroCoords(14, 39, 36.27856, -60, 50, 8.73645, 4.34399999722f), 0.3f),
+        }, "Alpha Centauri", AstroCoords(AstroCoords::AverageTwo), 0.3f),
 
         StarSystem(std::vector<Star> {
             Star("Barnard's Star", 0.187f, 3195, 0.0004f, AstroCoords(17, 57, 48.49847, 4, 41, 36.1139, 5.9629f), 96)
@@ -124,20 +124,25 @@ int main(int argc, char **argv)
         StarSystem(std::vector<Star> {
             Star("61 Cyg A", 0.667f, 4398, 0.15f, AstroCoords(21, 6, 53.9396, 38, 44, 57.902, 11.404f), 96),
             Star("61 Cyg B", 0.594f, 4174, 0.097f, AstroCoords(21, 6, 55.2638, 38, 44, 31.359, 11.404f), 96)
-        }, "61 Cygni", AstroCoords(AstroCoords::Averaged), 0.1f)
+        }, "61 Cygni", AstroCoords(AstroCoords::Averaged), 0.1f),
+
+        StarSystem(std::vector<Star> {
+            Star("Procyon A", 2.043f, 6582, 7.049f, AstroCoords(7, 39, 18.1195, 5, 13, 29.9552, 11.46f), 128),
+            Star("Procyon B", 0.01234f, 7740, 0.0f, glm::vec3(0.0003054538f, 0.0f, 0.0f), 64)
+        }, "Procyon", AstroCoords(AstroCoords::Centralized), 0.1f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
 
     // uncomment for the equatorial plane
-    VAO planeVAO;
-    planeVAO.Bind();
-    VBO planeVBO(equatorialPlane);
-    planeVAO.LinkAttribute(planeVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
-    planeVAO.LinkAttribute(planeVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
+    //VAO planeVAO;
+    //planeVAO.Bind();
+    //VBO planeVBO(equatorialPlane);
+    //planeVAO.LinkAttribute(planeVBO, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
+    //planeVAO.LinkAttribute(planeVBO, 1, 4, GL_FLOAT, sizeof(Vertex), 3 * sizeof(float));
 
-    planeVAO.Unbind();
-    planeVBO.Unbind();
+    //planeVAO.Unbind();
+    //planeVBO.Unbind();
     
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -150,7 +155,6 @@ int main(int argc, char **argv)
 
     double prevTime = glfwGetTime();
     std::cout << "FPS: ";
-
 
     while(!glfwWindowShouldClose(window))
     {
@@ -165,12 +169,12 @@ int main(int argc, char **argv)
         if (Systems::boundSystem != -1)
         {
             float camDistance = glm::distance(Systems::systems[Systems::boundSystem].position, camera.Position / StarSystem::scale);
-            camera.speed = (camDistance <= 4e-6) ? (5e-9f * StarSystem::scale) : (glm::min(5e1f * StarSystem::scale * camDistance * camDistance + 5e-7f * StarSystem::scale, 0.01f * StarSystem::scale));
+            camera.speed = (camDistance <= 4e-6) ? (5e-9f * StarSystem::scale) : (glm::min(5.0f * StarSystem::scale * camDistance * camDistance + 5e-7f * StarSystem::scale, 0.02f * StarSystem::scale));
             // std::cout << "speed: " << camera.speed << " dist: " << camDistance << std::endl;
         }
         else
         {
-            camera.speed = 200.0f;
+            camera.speed = 500.0f;
         }
 
 
@@ -183,10 +187,10 @@ int main(int argc, char **argv)
         Systems::checkInfluence(camera);
 
         // uncomment to enable drawing the equatorial plane
-        StarSystem::defaultStarShader.Activate();
-        planeVAO.Bind();
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        planeVAO.Unbind();
+        //StarSystem::defaultStarShader.Activate();
+        //planeVAO.Bind();
+        //// glDrawArrays(GL_TRIANGLES, 0, 6);
+        //planeVAO.Unbind();
 
         Systems::drawAll(camera);
         
@@ -211,11 +215,11 @@ void printMarquee()
 {
     int delayTime = 50;
     std::cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=" << std::endl; sleepy(delayTime);
-    std::cout << "  ,=====; ,--v--, ,-----, ,-----,    ,=====< v     v ,-----, ,-----, ,--v--, " << std::endl; sleepy(delayTime);
+    std::cout << "  ,=====; ;--v--; ,-----, ,-----,    ,=====< v     v ,-----, ,-----, ;--v--; " << std::endl; sleepy(delayTime);
     std::cout << " ||          |    |     | |     |   ||       |     | |     | |     |    |    " << std::endl; sleepy(delayTime);
-    std::cout << "  '=====,    |    |>---<| |>,---'   ||   *   >-----< |>---<| |>,---'    |    " << std::endl; sleepy(delayTime);
+    std::cout << "  '=====,    |    |>---<| |>,---'   ||   *   |>---<| |>---<| |>,---'    |    " << std::endl; sleepy(delayTime);
     std::cout << "       ||    |    |     | | '---,   ||       |     | |     | | '---,    |    " << std::endl; sleepy(delayTime);
-    std::cout << "  ,    ||   _|_  _|_   _|_|_   _|_  ||     , |_   _|_|_   _|_|_   _|_  _|_   " << std::endl; sleepy(delayTime);
+    std::cout << "  ,    ||   _|_  _|_   _|_|_   _|_  ||     ,_|_   _|_|_   _|_|_   _|_  _|_   " << std::endl; sleepy(delayTime);
     std::cout << "  '=====' ~~~~~~~~~~~~~~~~~~~~~~~~   '=====' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << std::endl; sleepy(delayTime);
     std::cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" << std::endl; sleepy(delayTime);
 }

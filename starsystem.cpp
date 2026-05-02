@@ -4,7 +4,7 @@
 typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
 
-float StarSystem::scale = 1e3f;
+float StarSystem::scale = 1e4f;
 Shader StarSystem::defaultStarShader = Shader();
 Shader StarSystem::defaultFlareShader = Shader();
 Texture StarSystem::defaultFlareTex = Texture();
@@ -57,7 +57,7 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, gl
     
     logInit();
 }
-// Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }
+Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }
 
 //Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex) : Star::Star(name, radius, color, luminosity, pos, subdivisions)
 //{
@@ -194,17 +194,18 @@ StarSystem::StarSystem(std::vector<Star> bodies, std::string name, AstroCoords a
     switch (astroCoords.systemPosCalcType)
     {
     case AstroCoords::SystemPosCalcType::Manual:
-        if (verboseLog)
-            std::cout << "twerp" << name << std::endl;
+        this->position = astroCoords.ToPosition();
         break;
     case AstroCoords::SystemPosCalcType::Averaged:
-        glm::vec3 average = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 sum = glm::vec3(0.0f, 0.0f, 0.0f);
         for (int i = 0; i < bodies.size(); i++)
         {
-            average += bodies[i].absolutePos;
+            sum += bodies[i].absolutePos;
         }
-        average /= bodies.size();
-        this->position = average;
+        this->position = sum / (float)bodies.size();
+        break;
+    case AstroCoords::AverageTwo:
+        this->position = (bodies[0].absolutePos + bodies[1].absolutePos) / 2.0f;
         break;
     case AstroCoords::SystemPosCalcType::Centralized:
     default:

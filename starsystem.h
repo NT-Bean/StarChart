@@ -39,7 +39,8 @@ public:
         {
             Manual,
             Centralized,
-            Averaged
+            Averaged,
+            AverageTwo
         };
 
         enum SystemPosCalcType systemPosCalcType = Manual;
@@ -82,7 +83,7 @@ public:
 
         
         Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions);
-        //Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions);
+        Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions);
 
         //Star(std::string name, float radius, glm::vec3 color, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
         //Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
@@ -91,7 +92,7 @@ public:
         Star(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions);
 
         //Star(std::string name, float radius, glm::vec3 color, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
-        //(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
+        //Star(std::string name, float radius, int temperature, float luminosity, AstroCoords astroCoords, int subdivisions, Shader starShader, Shader flareShader, Texture flareTex);
 
 
         void logInit();
