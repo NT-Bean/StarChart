@@ -176,6 +176,7 @@ void Star::draw(Shader starShader, Shader flareShader, Texture flareTex, Camera&
         flareShader.Activate();
         glUniform1f(glGetUniformLocation(flareShader.ID, "irradiance"), irradiance);
         glUniform1f(glGetUniformLocation(flareShader.ID, "luminosity"), luminosity);
+        glUniform1f(glGetUniformLocation(flareShader.ID, "luminousChecker"), luminosity == 0.0f ? 7.0f : 1.0f );
 
         flareVAO.Bind();
 

@@ -8,10 +8,11 @@ out vec4 vertexColor;
 uniform mat4 camMatrix;
 uniform float irradiance;
 uniform float luminosity;
+uniform float luminousChecker;
 
 void main()
 {
 	gl_Position = camMatrix * vec4(flarePos, 1.0f);
 	vertexColor = color;
-	gl_PointSize = 1.15 * (irradiance + max(7.5f * pow((log2(luminosity + 2.0f) / log2(10)), 1.0f / 3.0f), 7.0f));
+	gl_PointSize = 1.15 * (irradiance + max(7.5f * pow((log2(luminosity + 2.0f) / log2(10)), 1.0f / 3.0f), 7.0f / luminousChecker));
 }

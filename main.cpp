@@ -129,7 +129,13 @@ int main(int argc, char **argv)
         StarSystem(std::vector<Star> {
             Star("Procyon A", 2.043f, 6582, 7.049f, AstroCoords(7, 39, 18.1195, 5, 13, 29.9552, 11.46f), 128),
             Star("Procyon B", 0.01234f, 7740, 0.0f, glm::vec3(0.0003054538f, 0.0f, 0.0f), 64)
-        }, "Procyon", AstroCoords(AstroCoords::Centralized), 0.1f)
+        }, "Procyon", AstroCoords(AstroCoords::Centralized), 0.1f),
+
+        StarSystem(std::vector<Star> {
+            Star("Epsilon Indi A", 0.713f, 4649, 0.21f, AstroCoords(22, 3, 21.65363, -56, 47, 9.5228, 11.867f), 128),
+            Star("Epsilon Indi Ba", 0.08f, 1312, 0.0f, AstroCoords(22, 10, 3.65363, -56, 47, 9.5228, 11.867f), 64),
+            Star("Epsilon Indi Bb", 0.082f, 972, 0.0f, AstroCoords(22, 10, 3.65363, -56, 47, 8.7928, 11.867f), 64)
+        }, "Epsilon Indi", AstroCoords(AstroCoords::Centralized), 0.3f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
