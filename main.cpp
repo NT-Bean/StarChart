@@ -135,7 +135,17 @@ int main(int argc, char **argv)
             Star("Epsilon Indi A", 0.713f, 4649, 0.21f, AstroCoords(22, 3, 21.65363, -56, 47, 9.5228, 11.867f), 128),
             Star("Epsilon Indi Ba", 0.08f, 1312, 0.0f, AstroCoords(22, 10, 3.65363, -56, 47, 9.5228, 11.867f), 64),
             Star("Epsilon Indi Bb", 0.082f, 972, 0.0f, AstroCoords(22, 10, 3.65363, -56, 47, 8.7928, 11.867f), 64)
-        }, "Epsilon Indi", AstroCoords(AstroCoords::Centralized), 0.3f)
+        }, "Epsilon Indi", AstroCoords(AstroCoords::Centralized), 0.3f),
+
+        StarSystem(std::vector<Star> {
+            Star("Tau Ceti", 0.793f, 5320, 0.45f, AstroCoords(1, 44, 4.083, -15, 56, 14.93, 11.912f), 128)
+        }, "Tau Ceti (sys)", AstroCoords(AstroCoords::Centralized), 0.1f),
+
+            StarSystem(std::vector<Star> {
+            Star("40 Eridani A", 0.804f, 5126, 0.4f, AstroCoords(4, 15, 16.31962, -7, 39, 10.3308, 16.360f), 128),
+            Star("40 Eridani B", 0.01308f, 17200, 0.0f, AstroCoords(4, 15, 21.79572, -7, 39, 29.2040, 16.333f), 64),
+            Star("40 Eridani C", 0.274f, 3167, 0.0f, AstroCoords(4, 15, 21.53600, -7, 39, 20.6946, 16.353f), 96)
+        }, "40 Eridani", AstroCoords(AstroCoords::Centralized), 1.0f)
     });
 
     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 1.58125e-5f) * StarSystem::scale, StarSystem::scale);
