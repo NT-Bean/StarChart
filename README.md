@@ -5,7 +5,7 @@
 >*Coded with OpenGL and tears.*
 
 Current features include:
-- 15 mostly accurately positioned stars.
+- 19 mostly accurately positioned stars.
 - Non-broken sphere rendering!
 - the luminosity code is *MESSED UP*
 - im gonna add more stars
