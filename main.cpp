@@ -102,6 +102,9 @@ int main(int argc, char **argv)
         //  name           astronomical coordinates          dist.  influence radius
         }, "Solar System", AstroCoords(AstroCoords::Centralized), 0.1f),
 
+
+        // List of nearest stars - Wikipedia (https://en.wikipedia.org/wiki/List_of_nearest_stars)
+
         StarSystem(std::vector<Star> {
             Star("Alpha Centauri A", 1.2175f, 5804, 1.5059f, AstroCoords(14, 39, 36.494, -60, 50, 2.3737, 4.344f), 128),
             Star("Alpha Centauri B", 0.8591f, 5207, 0.4981f, AstroCoords(14, 39, 36.06311, -60, 50, 15.0992, 4.344f), 128),
@@ -141,7 +144,11 @@ int main(int argc, char **argv)
             Star("Tau Ceti", 0.793f, 5320, 0.45f, AstroCoords(1, 44, 4.083, -15, 56, 14.93, 11.912f), 128)
         }, "Tau Ceti (sys)", AstroCoords(AstroCoords::Centralized), 0.1f),
 
-            StarSystem(std::vector<Star> {
+        StarSystem(std::vector<Star> {
+            Star("Groombridge 1618", 0.605f, 3970, 0.049f, AstroCoords(10, 11, 22.13995, 49, 27, 15.2510, 15.886f), 96)
+        }, "Groombridge 1618 (sys)", AstroCoords(AstroCoords::Centralized), 0.1f),
+
+        StarSystem(std::vector<Star> {
             Star("40 Eridani A", 0.804f, 5126, 0.4f, AstroCoords(4, 15, 16.31962, -7, 39, 10.3308, 16.360f), 128),
             Star("40 Eridani B", 0.01308f, 17200, 0.0f, AstroCoords(4, 15, 21.79572, -7, 39, 29.2040, 16.333f), 64),
             Star("40 Eridani C", 0.274f, 3167, 0.0f, AstroCoords(4, 15, 21.53600, -7, 39, 20.6946, 16.353f), 96)
