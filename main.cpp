@@ -1,4 +1,4 @@
-﻿// failed build count: 48
+﻿// failed build count: 49
 
 #ifdef _WIN32
     #include <windows.h>
@@ -19,6 +19,8 @@
 
 #include "starsystem.h"
 #include "systems.h"
+
+#include "font.h"
 
 typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
@@ -88,9 +90,9 @@ int main(int argc, char **argv)
     gladLoadGL();
 
 
-    StarSystem::defaultStarShader = Shader("resources/star.vert", "resources/star.frag");
-    StarSystem::defaultFlareShader = Shader("resources/flare.vert", "resources/flare.frag");
-    StarSystem::defaultFlareTex = Texture("resources/flare.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    StarSystem::defaultStarShader = Shader("resources/shaders/star.vert", "resources/shaders/star.frag");
+    StarSystem::defaultFlareShader = Shader("resources/shaders/flare.vert", "resources/shaders/flare.frag");
+    StarSystem::defaultFlareTex = Texture("resources/textures/flare.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 
 
     Systems::init(
@@ -167,6 +169,11 @@ int main(int argc, char **argv)
     //planeVAO.Unbind();
     //planeVBO.Unbind();
     
+
+
+    Font testFont("resources/fonts/comici.ttf", 48)
+
+
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

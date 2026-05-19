@@ -130,7 +130,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\user\cool-ish-stuff\coding\vstudio-projects\StarChart\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +148,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\user\cool-ish-stuff\coding\vstudio-projects\StarChart\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,6 +159,7 @@
     <ClCompile Include="systems.cpp" />
     <ClCompile Include="starsystem.cpp" />
     <ClCompile Include="stb.cpp" />
+    <ClCompile Include="text.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
@@ -169,6 +172,7 @@
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="systems.h" />
     <ClInclude Include="starsystem.h" />
+    <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
