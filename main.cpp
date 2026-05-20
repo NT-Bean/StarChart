@@ -20,7 +20,7 @@
 #include "starsystem.h"
 #include "systems.h"
 
-#include "font.h"
+#include "text.h"
 
 typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
@@ -170,9 +170,10 @@ int main(int argc, char **argv)
     //planeVBO.Unbind();
     
 
+    Font testFont("resources/fonts/comici.ttf", 48);
+    Text sumshi(testFont);
 
-    Font testFont("resources/fonts/comici.ttf", 48)
-
+    Shader uiShader("resources/shaders/font.vert", "resources/shaders/font.frag");
 
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -180,6 +181,7 @@ int main(int argc, char **argv)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glEnable(GL_PROGRAM_POINT_SIZE);
+
 
     glfwSwapInterval(1); // turn on vsync (limit framrate)
 
@@ -223,6 +225,8 @@ int main(int argc, char **argv)
         //planeVAO.Unbind();
 
         Systems::drawAll(camera);
+
+        sumshi.RenderText(uiShader, "d", 100.0f, 100.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f));
         
         glfwSwapBuffers(window);
         glfwPollEvents();

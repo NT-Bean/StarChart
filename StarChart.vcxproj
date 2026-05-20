@@ -159,7 +159,8 @@
     <ClCompile Include="systems.cpp" />
     <ClCompile Include="starsystem.cpp" />
     <ClCompile Include="stb.cpp" />
-    <ClCompile Include="text.c" />
+    <ClCompile Include="font.cpp" />
+    <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="systems.h" />
     <ClInclude Include="starsystem.h" />
+    <ClInclude Include="font.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
