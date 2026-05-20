@@ -10,9 +10,11 @@ public:
 
     static std::vector<StarSystem> systems;
 
-    static void init(std::vector<StarSystem> systems);
+    static void init();
 
     static void checkInfluence(Camera& camera);
+
+    static void drawLabels(Camera& camera);
 
     static void drawAll(Camera& camera);
     static void deleteAll();

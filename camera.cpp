@@ -38,7 +38,14 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<S
 	}
 }
 
-
+glm::mat4 Camera::GetViewMatrix(float FOVdeg, float nearPlane, float farPlane)
+{
+    return glm::lookAt(Position, Position + Orientation, Up);
+}
+glm::mat4 Camera::GetProjectionMatrix(float FOVdeg, float nearPlane, float farPlane)
+{
+    return glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+}
 
 void Camera::Inputs(GLFWwindow* window, float scale)
 {

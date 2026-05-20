@@ -13,6 +13,8 @@
 #include "camera.h"
 #include "texture.h"
 
+#include "text.h"
+
 class StarSystem
 {
 public:
@@ -76,6 +78,8 @@ public:
         std::vector<Vertex> vertices = {};
         std::vector<GLuint> indices = {};
         VAO starVAO;
+
+        Text starLabel;
 
         float luminosity = 1.0f;
 

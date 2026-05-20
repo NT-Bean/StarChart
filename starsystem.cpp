@@ -5,9 +5,10 @@ typedef StarSystem::Star Star;
 typedef StarSystem::AstroCoords AstroCoords;
 
 float StarSystem::scale = 1e4f;
-Shader StarSystem::defaultStarShader = Shader();
-Shader StarSystem::defaultFlareShader = Shader();
-Texture StarSystem::defaultFlareTex = Texture();
+
+Shader StarSystem::defaultStarShader;
+Shader StarSystem::defaultFlareShader;
+Texture StarSystem::defaultFlareTex;
 
 bool StarSystem::renderFlares = true;
 bool StarSystem::verboseLog = false;
@@ -54,7 +55,9 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, gl
     this->position = pos; // astroCoords.ToPosition();
     absolutePos = position;
     this->color = color;
-    
+
+    starLabel = Text();
+
     logInit();
 }
 Star::Star(std::string name, float radius, int temperature, float luminosity, glm::vec3 pos, int subdivisions) : Star::Star(name, radius, surfaceTempToColor((float)temperature), luminosity, pos, subdivisions) { }

@@ -41,6 +41,10 @@ public:
 
     // Updates and exports the camera matrix to the Vertex Shader
     void Matrix(float FOVdeg, float nearPlane, float farPlane, std::vector<Shader>& shaders, const char* uniform);
+
+    glm::mat4 GetViewMatrix(float FOVdeg, float nearPlane, float farPlane);
+    glm::mat4 GetProjectionMatrix(float FOVdeg, float nearPlane, float farPlane);
+
     // Handles camera inputs
     void Inputs(GLFWwindow* window, float scale);
 };
