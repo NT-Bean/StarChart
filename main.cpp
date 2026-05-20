@@ -1,4 +1,4 @@
-﻿// failed build count: 49
+﻿// failed build count: 50
 
 #ifdef _WIN32
     #include <windows.h>
@@ -170,8 +170,10 @@ int main(int argc, char **argv)
     //planeVBO.Unbind();
     
 
-    Font testFont("resources/fonts/comici.ttf", 48);
-    Text sumshi(testFont);
+    Font uiFont("resources/fonts/comici.ttf", 24);
+    
+    Text systemUI(uiFont);
+    // Text fpsUI(uiFont);
 
     Shader uiShader("resources/shaders/font.vert", "resources/shaders/font.frag");
 
@@ -186,14 +188,14 @@ int main(int argc, char **argv)
     glfwSwapInterval(1); // turn on vsync (limit framrate)
 
     double prevTime = glfwGetTime();
-    std::cout << "FPS: ";
+    // std::cout << "FPS: ";
 
     while(!glfwWindowShouldClose(window))
     {
         double currentTime = glfwGetTime();
         int FPS = 1 / (currentTime - prevTime);
         prevTime = currentTime;
-        std::cout << "\x1b[2K\rFPS: " << FPS;
+        // std::cout << "\x1b[2K\rFPS: " << FPS;
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -226,7 +228,8 @@ int main(int argc, char **argv)
 
         Systems::drawAll(camera);
 
-        sumshi.RenderText(uiShader, "d", 100.0f, 100.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f));
+        systemUI.RenderText(uiShader, "Current System: " + (Systems::boundSystem != -1 ? Systems::systems[Systems::boundSystem].name : "None"), 25.0f, 25.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f));
+        // fpsUI.RenderText(uiShader, "FPS: " + FPS, 25.0f, 50.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f));
         
         glfwSwapBuffers(window);
         glfwPollEvents();
