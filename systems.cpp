@@ -119,7 +119,7 @@ void Systems::checkInfluence(Camera& camera)
 }
 
 
-void Systems::drawLabels(Camera& camera)
+void Systems::drawLabels(Camera& camera, Shader uiShader)
 {
     for (int i = 0; i < Systems::systems.size(); i++)
     {
@@ -136,7 +136,7 @@ void Systems::drawLabels(Camera& camera)
 
 
             glm::vec3 screenCoords = glm::project(Systems::systems[i].bodies[j].position, camera.GetViewMatrix(30.0f, nearPlane, farPlane), camera.GetProjectionMatrix(30.0f, nearPlane, farPlane), glm::vec4(0, 0, 1280, 720));
-            Systems::systems[i].bodies[j].starLabel.RenderText("Systems::systems[i].bodies[j].name", 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            Systems::systems[i].bodies[j].starLabel.RenderText(uiShader, "Systems::systems[i].bodies[j].name", 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// failed build count: 57
+﻿// failed build count: 60
 
 #ifdef _WIN32
     #include <windows.h>
@@ -91,8 +91,11 @@ int main(int argc, char **argv)
     StarSystem::defaultFlareShader = Shader("resources/shaders/flare.vert", "resources/shaders/flare.frag");
     StarSystem::defaultFlareTex = Texture("resources/textures/flare.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 
-    Text::uiFont = Font("resources/fonts/msgothic.ttc", 24);
-    Text::uiShader = Shader("resources/shaders/font.vert", "resources/shaders/font.frag");
+    std::cout << "UI FONT INIT" << std::endl;
+
+    Font uiFont = Font("resources/fonts/msgothic.ttc", 24);
+
+    Shader uiShader = Shader("resources/shaders/font.vert", "resources/shaders/font.frag");
 
     Systems::init();
 
@@ -110,8 +113,8 @@ int main(int argc, char **argv)
     
 
     
-    Text systemUI(Text::uiFont);
-    Text fpsUI = Text();
+    Text systemUI = Text(uiFont);
+    Text fpsUI = Text(uiFont);
 
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -173,10 +176,10 @@ int main(int argc, char **argv)
 
         Systems::drawAll(camera);
 
-        Systems::drawLabels(camera);
+        Systems::drawLabels(camera, uiShader);
 
-        systemUI.RenderText(Text::uiShader, "Current System: " + (Systems::boundSystem != -1 ? Systems::systems[Systems::boundSystem].name : "None"), 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-        fpsUI.RenderText(Text::uiShader, "FPS: " + std::to_string(FPS), 25.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        systemUI.RenderText(uiShader, "Current System: " + (Systems::boundSystem != -1 ? Systems::systems[Systems::boundSystem].name : "None"), 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        fpsUI.RenderText(uiShader, "FPS: " + std::to_string(FPS), 25.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         
         glfwSwapBuffers(window);
         glfwPollEvents();

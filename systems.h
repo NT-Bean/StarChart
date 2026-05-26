@@ -14,7 +14,7 @@ public:
 
     static void checkInfluence(Camera& camera);
 
-    static void drawLabels(Camera& camera);
+    static void drawLabels(Camera& camera, Shader uiShader);
 
     static void drawAll(Camera& camera);
     static void deleteAll();
