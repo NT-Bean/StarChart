@@ -84,6 +84,8 @@ int main(int argc, char **argv)
     }
     glfwMakeContextCurrent(window);
 
+    glfwSetInputMode(window, GLFW_MOD_CAPS_LOCK, GLFW_TRUE);
+
     gladLoadGL();
 
 
@@ -166,7 +168,7 @@ int main(int argc, char **argv)
         Systems::checkInfluence(camera);
 
         // uncomment to enable drawing the equatorial plane
-        //StarSystem::defaultStarShader.Activate();
+        //StarSystem::defaultStarShader.Activate();2
         //planeVAO.Bind();
         //// glDrawArrays(GL_TRIANGLES, 0, 6);
         //planeVAO.Unbind();
