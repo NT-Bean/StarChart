@@ -121,6 +121,7 @@ void Systems::checkInfluence(Camera& camera)
 
 void Systems::drawLabels(Camera& camera, Shader uiShader)
 {
+
     for (int i = 0; i < Systems::systems.size(); i++)
     {
         for (int j = 0; j < Systems::systems[i].bodies.size(); j++)
@@ -128,15 +129,33 @@ void Systems::drawLabels(Camera& camera, Shader uiShader)
             float farPlane = 1e4f * StarSystem::scale;
             float nearPlane = glm::distance(camera.Position / StarSystem::scale, glm::vec3(0.0f, 0.0f, 0.0f)) <= 1e2f * StarSystem::scale ? 1e-2f * StarSystem::scale : 1e2f * StarSystem::scale;
 
-            if (Systems::boundSystem != -1)
-            {
-                farPlane = 1e3f * StarSystem::scale;
-                nearPlane = glm::distance(Systems::systems[i].bodies[j].absolutePos * StarSystem::scale, camera.Position) < 1e-6 * StarSystem::scale ? 1e-13 * StarSystem::scale : 1e-6 * StarSystem::scale;
-            }
+            //if (Systems::boundSystem != -1)
+            //{
+            //    farPlane = 1e3f * StarSystem::scale;
+            //    nearPlane = glm::distance(Systems::systems[i].bodies[j].absolutePos * StarSystem::scale, camera.Position) < 1e-6 * StarSystem::scale ? 1e-13 * StarSystem::scale : 1e-6 * StarSystem::scale;
+            //}
 
+            glm::vec3 truePosition = Systems::systems[i].bodies[j].absolutePos * StarSystem::scale;
+            glm::vec3 trueCamPos = camera.Position * StarSystem::scale;
 
-            glm::vec3 screenCoords = glm::project(Systems::systems[i].bodies[j].position, camera.GetViewMatrix(30.0f, nearPlane, farPlane), camera.GetProjectionMatrix(30.0f, nearPlane, farPlane), glm::vec4(0, 0, 1280, 720));
-            Systems::systems[i].bodies[j].starLabel.RenderText(uiShader, "Systems::systems[i].bodies[j].name", 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::vec3 screenCoords = glm::project(truePosition, camera.GetViewMatrix(30.0f, nearPlane, farPlane), camera.GetProjectionMatrix(30.0f, nearPlane, farPlane), glm::vec4(0, 0, 1280, 720));
+            
+            if (screenCoords.z < 0.0f || screenCoords.z > 1.0f)
+                continue;
+            
+            Systems::systems[i].bodies[j].starLabel.RenderText(uiShader, Systems::systems[i].bodies[j].name, screenCoords.x + 10, screenCoords.y + 10, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+            // debug
+            //if (i == 1)
+            //{
+            //    if (j == 2)
+            //    {
+            //        std::cout << "proxi true position (" << truePosition.x << ", " << truePosition.y << ", " << truePosition.z << ")" << std::endl;
+            //        std::cout << "caerma pos (" << trueCamPos.x << ", " << trueCamPos.y << ", " << trueCamPos.z << ")" << std::endl;
+
+            //        std::cout << Systems::systems[1].bodies[2].name << " screen coords (" << screenCoords.x << ", " << screenCoords.y << ", " << screenCoords.z << ")" << std::endl;
+            //    }
+            //}
         }
     }
 }

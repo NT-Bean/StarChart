@@ -28,6 +28,9 @@ public:
     static Shader defaultFlareShader;
     static Texture defaultFlareTex;
 
+    static Font uiFont;
+
+
     int boundStar = -1;
     static float influenceRadius;
 

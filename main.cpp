@@ -92,9 +92,8 @@ int main(int argc, char **argv)
     StarSystem::defaultFlareTex = Texture("resources/textures/flare.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 
     std::cout << "UI FONT INIT" << std::endl;
-
-    Font uiFont = Font("resources/fonts/msgothic.ttc", 24);
-
+    StarSystem::uiFont = Font("resources/fonts/msgothic.ttc", 24);
+ 
     Shader uiShader = Shader("resources/shaders/font.vert", "resources/shaders/font.frag");
 
     Systems::init();
@@ -111,10 +110,8 @@ int main(int argc, char **argv)
     //planeVAO.Unbind();
     //planeVBO.Unbind();
     
-
-    
-    Text systemUI = Text(uiFont);
-    Text fpsUI = Text(uiFont);
+    Text systemUI = Text(StarSystem::uiFont);
+    Text fpsUI = Text(StarSystem::uiFont);
 
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -176,7 +173,9 @@ int main(int argc, char **argv)
 
         Systems::drawAll(camera);
 
-        Systems::drawLabels(camera, uiShader);
+        if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+            Systems::drawLabels(camera, uiShader);
+        
 
         systemUI.RenderText(uiShader, "Current System: " + (Systems::boundSystem != -1 ? Systems::systems[Systems::boundSystem].name : "None"), 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         fpsUI.RenderText(uiShader, "FPS: " + std::to_string(FPS), 25.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));

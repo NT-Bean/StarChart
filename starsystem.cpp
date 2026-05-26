@@ -10,6 +10,8 @@ Shader StarSystem::defaultStarShader;
 Shader StarSystem::defaultFlareShader;
 Texture StarSystem::defaultFlareTex;
 
+Font StarSystem::uiFont;
+
 bool StarSystem::renderFlares = true;
 bool StarSystem::verboseLog = false;
 
@@ -56,7 +58,7 @@ Star::Star(std::string name, float radius, glm::vec3 color, float luminosity, gl
     absolutePos = position;
     this->color = color;
 
-    starLabel = Text();
+    starLabel = Text(StarSystem::uiFont);
 
     logInit();
 }
